@@ -245,7 +245,7 @@
       </div>
       
       <div class="md-panel">
-          <div class="md-title">Tax Breakdown</div>
+          <div class="md-title">Tax Breakdown (Total Demand)</div>
           <div class="md-breakup-grid" id="breakupContainer">
               <!-- Rendered via JS -->
           </div>
@@ -305,7 +305,7 @@
         <div class="field"><label>Payment date</label><input id="paymentDate"></div>
         <div class="field full"><label>Paid by</label><input id="paidBy"></div>
 
-        <div class="section-label">Amount breakdown (₹)</div>
+        <div class="section-label">Amount breakdown (Total Demand)</div>
         <div class="field"><label>Tax on building</label><input id="taxBuilding" type="number" step="0.01" min="0" value="0"></div>
         <div class="field"><label>Beggary cess</label><input id="cessBeggary" type="number" step="0.01" min="0" value="0"></div>
         <div class="field"><label>Library cess</label><input id="cessLibrary" type="number" step="0.01" min="0" value="0"></div>
@@ -641,7 +641,7 @@ document.getElementById('receiptForm').addEventListener('submit', async (e)=>{
   await persist(); populateYearFilter(); render(); closeModals(); showToast(editingId ? 'Updated' : 'Added');
 });
 
-/* ---------- PDF Parsing (Advanced Lenient Engine) ---------- */
+/* ---------- PDF Parsing (Extracting from Total Demand Column) ---------- */
 if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 const PAYMENT_TYPE_MAP = {'ಡಿ.ಡಿ': 'DD', 'ನಗದು': 'Cash', 'ಚೆಕ್': 'Cheque', 'ಆನ್\u200cಲೈನ್': 'Online', 'ಆನ್‌ಲೈನ್': 'Online', 'ಕಾರ್ಡ್': 'Card', 'ಚಲನ್': 'Challan'};
 function num(s){ if (s === undefined || s === null) return 0; const n = parseFloat(String(s).replace(/,/g,'')); return isNaN(n) ? 0 : n; }
@@ -662,29 +662,36 @@ async function pdfToLines(pdf){
 }
 
 // Multi-line lookahead to bypass invisible PDF table rendering issues
+// Specifically extracts the "Total Demand" column (typically the 3rd index)
 function amountRow(lines, labelRe) {
   for (let i = 0; i < lines.length; i++) {
     const m = lines[i].match(labelRe);
     if (m) { 
-        // 1. Try to grab the number on the exact same line
-        let nums = lines[i].slice(m.index + m[0].length).trim().match(/-?[\d,]+\.?\d*/g); 
-        if (nums && nums.length > 0) {
-            let currentVal = nums.length >= 2 ? nums[1] : nums[0];
-            return { current: num(currentVal), total: num(nums[nums.length-1]) }; 
+        let nums = [];
+        
+        let lineRemainder = lines[i].slice(m.index + m[0].length);
+        let matched = lineRemainder.match(/-?[\d,]+\.?\d*/g); 
+        if (matched) nums.push(...matched);
+
+        if (nums.length < 3 && i + 1 < lines.length) {
+            matched = lines[i+1].match(/-?[\d,]+\.?\d*/g);
+            if (matched) nums.push(...matched);
         }
-        // 2. Fallback: Search the immediately following line
-        if (i + 1 < lines.length) {
-            nums = lines[i+1].trim().match(/-?[\d,]+\.?\d*/g);
-            if (nums && nums.length > 0) return { current: num(nums[0]), total: num(nums[nums.length-1]) };
+        
+        if (nums.length < 3 && i + 2 < lines.length) {
+            matched = lines[i+2].match(/-?[\d,]+\.?\d*/g);
+            if (matched) nums.push(...matched);
         }
-        // 3. Fallback: Search two lines down
-        if (i + 2 < lines.length) {
-            nums = lines[i+2].trim().match(/-?[\d,]+\.?\d*/g);
-            if (nums && nums.length > 0) return { current: num(nums[0]), total: num(nums[nums.length-1]) };
+        
+        if (nums.length > 0) {
+            // Index 2 is typically the "Total Demand" column.
+            // If less than 3 exist, it safely falls back to the last available number.
+            let val = nums.length >= 3 ? nums[2] : nums[nums.length - 1];
+            return num(val);
         }
     }
   }
-  return null;
+  return 0;
 }
 
 function extractFieldsFromLines(lines){
@@ -715,12 +722,12 @@ function extractFieldsFromLines(lines){
   d.paymentType = ''; d.paymentDate = ''; d.paidBy = '';
   for (const line of lines){ const pm = line.match(/^(\S+)\s+(\d{1,2}-[A-Z]{3}-\d{4})\s*(.*)$/); if (pm){ d.paymentType = PAYMENT_TYPE_MAP[pm[1]] || pm[1]; d.paymentDate = pm[2]; d.paidBy = pm[3].trim(); break; } }
   
-  // Resilient Regex extraction for multi-line fallback
-  let row = amountRow(lines, /Tax\s*on\s*Building/i); d.taxBuilding = row ? row.current : 0;
-  row = amountRow(lines, /Beggary\s*Cess/i); d.cessBeggary = row ? row.current : 0;
-  row = amountRow(lines, /Library\s*Cess/i); d.cessLibrary = row ? row.current : 0;
-  row = amountRow(lines, /Health\s*Cess/i); d.cessHealth = row ? row.current : 0;
-  row = amountRow(lines, /Round\s*off/i); d.roundOff = row ? row.total : 0;
+  // Resilient Regex extraction for multi-line fallback (targeting Total Demand)
+  d.taxBuilding = amountRow(lines, /Tax\s*on\s*Building/i);
+  d.cessBeggary = amountRow(lines, /Beggary\s*Cess/i);
+  d.cessLibrary = amountRow(lines, /Library\s*Cess/i);
+  d.cessHealth = amountRow(lines, /Health\s*Cess/i);
+  d.roundOff = amountRow(lines, /Round\s*off/i);
   
   m = text.match(/Total payment amount\s+(-?[\d,]+\.?\d*)/i); d.totalAmount = m ? num(m[1]) : 0;
   return d;
