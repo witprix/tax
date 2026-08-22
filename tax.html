@@ -77,17 +77,11 @@
   .sd-breakdown { flex: 1; min-width: 280px; }
   .stacked-bar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--paper-2); margin-bottom: 12px; }
   .stacked-bar .seg { height: 100%; transition: width 0.3s ease; }
-  .seg.build { background: var(--cyan); }
-  .seg.beggary { background: #8b5cf6; } 
-  .seg.lib { background: #10b981; } 
-  .seg.health { background: #f59e0b; } 
-  .seg.other { background: var(--danger); }
   
   .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
   .legend-item { display: flex; align-items: center; gap: 6px; color: var(--muted); }
-  .legend-item .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .legend-item .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
   .legend-item span { color: var(--ink); font-weight: 600;}
-  .legend-item.discount span { color: #10b981; }
 
   @media(max-width: 600px){ 
       .slim-dash { flex-direction: column; align-items: flex-start; gap: 16px; }
@@ -199,6 +193,11 @@
     background: var(--paper); z-index: 1000; flex-direction: column; align-items: center; justify-content: center;
     color: white; text-align: center; padding: 20px;
   }
+  
+  /* Progress Bar CSS for Receiver */
+  .progress-container { width: 100%; max-width: 300px; height: 12px; background: var(--card); border-radius: 6px; overflow: hidden; border: 1px solid var(--line); margin-top: 10px;}
+  .progress-fill { height: 100%; background: var(--cyan); width: 0%; transition: width 0.2s linear; }
+
   .loading-spinner {
     display: inline-block; width: 32px; height: 32px; border: 3px solid rgba(255,255,255,0.1);
     border-top: 3px solid var(--cyan); border-radius: 50%; animation: spin 1s linear infinite; margin: 16px;
@@ -352,10 +351,13 @@
 
 <!-- Receiver Full Screen Overlay -->
 <div id="receive-overlay">
-    <h2 style="color: var(--cyan); font-weight:700;">📥 Wi-Fi Transfer Receiver</h2>
-    <p id="receive-status" style="color: var(--muted); margin-top: 10px;">Connecting to Host Ledger...</p>
+    <h2 style="color: var(--cyan); font-weight:700;">📥 Wi-Fi Receiver</h2>
+    <p id="receive-status" style="color: var(--muted); margin-top: 10px;">Connecting to Host...</p>
     <div class="loading-spinner" id="receive-loader"></div>
-    <button class="btn btn-secondary" style="margin-top: 30px;" onclick="window.location.href=window.location.href.split('?')[0]">Cancel & Return</button>
+    <div class="progress-container" id="receive-progress-container" style="display:none;">
+        <div class="progress-fill" id="receive-progress"></div>
+    </div>
+    <button class="btn btn-secondary" id="receive-cancel-btn" style="margin-top: 30px;" onclick="window.location.href=window.location.href.split('?')[0]">Cancel & Return</button>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -430,17 +432,10 @@ function renderDashboard(filtered) {
         tPaid += (Number(r.totalAmount)||0);
     });
 
-    // Update Stats Panel
     document.getElementById('sdTotal').textContent = fmtMoney(tPaid);
     document.getElementById('sdCount').textContent = `${filtered.length} Receipts`;
     document.getElementById('sdProps').textContent = `${new Set(filtered.map(r=>r.pid||r.propNo).filter(Boolean)).size} Properties`;
 
-    // Render Breakup Logic (Gross Components - Discount = Net Paid)
-    const tGrossKnown = tBuild + tBeg + tLib + tHealth;
-    const tNetExpected = tGrossKnown - tDisc;
-    const tOther = Math.max(0, tPaid - tNetExpected); 
-    const tTotalBar = tGrossKnown + tOther; // For calculating percentages
-    
     const stackBar = document.getElementById('sdStackBar');
     const legend = document.getElementById('sdLegend');
     
@@ -448,6 +443,21 @@ function renderDashboard(filtered) {
          stackBar.innerHTML = '';
          legend.innerHTML = '<span style="color:var(--muted)">No breakdown data</span>';
     } else {
+        const tGrossKnown = tBuild + tBeg + tLib + tHealth;
+        const tNetExpected = tGrossKnown - tDisc;
+        const tOther = Math.max(0, tPaid - tNetExpected); 
+        const tTotalBar = tGrossKnown + tOther; 
+        
+        // Define exact color mapping to fix Legend visibility issues
+        const colorMap = {
+            build: 'var(--cyan)',
+            beggary: '#8b5cf6',
+            lib: '#10b981',
+            health: '#f59e0b',
+            other: 'var(--danger)',
+            discount: '#10b981'
+        };
+
         const buildPct = (tBuild / tTotalBar) * 100;
         const begPct = (tBeg / tTotalBar) * 100;
         const libPct = (tLib / tTotalBar) * 100;
@@ -455,22 +465,23 @@ function renderDashboard(filtered) {
         const otherPct = (tOther / tTotalBar) * 100;
         
         stackBar.innerHTML = `
-            <div class="seg build" style="width: ${buildPct}%"></div>
-            <div class="seg beggary" style="width: ${begPct}%"></div>
-            <div class="seg lib" style="width: ${libPct}%"></div>
-            <div class="seg health" style="width: ${healthPct}%"></div>
-            ${tOther > 0 ? `<div class="seg other" style="width: ${otherPct}%"></div>` : ''}
+            <div class="seg" style="width: ${buildPct}%; background: ${colorMap.build}"></div>
+            <div class="seg" style="width: ${begPct}%; background: ${colorMap.beggary}"></div>
+            <div class="seg" style="width: ${libPct}%; background: ${colorMap.lib}"></div>
+            <div class="seg" style="width: ${healthPct}%; background: ${colorMap.health}"></div>
+            ${tOther > 0 ? `<div class="seg" style="width: ${otherPct}%; background: ${colorMap.other}"></div>` : ''}
         `;
         
+        // Explicitly set the inline style background to guarantee dot visibility
         let legendHtml = `
-            <div class="legend-item"><div class="dot build"></div> Building <span>${fmtMoney(tBuild)}</span></div>
-            <div class="legend-item"><div class="dot beggary"></div> Beggary <span>${fmtMoney(tBeg)}</span></div>
-            <div class="legend-item"><div class="dot lib"></div> Library <span>${fmtMoney(tLib)}</span></div>
-            <div class="legend-item"><div class="dot health"></div> Health <span>${fmtMoney(tHealth)}</span></div>
+            <div class="legend-item"><div class="dot" style="background:${colorMap.build}"></div> Building <span>${fmtMoney(tBuild)}</span></div>
+            <div class="legend-item"><div class="dot" style="background:${colorMap.beggary}"></div> Beggary <span>${fmtMoney(tBeg)}</span></div>
+            <div class="legend-item"><div class="dot" style="background:${colorMap.lib}"></div> Library <span>${fmtMoney(tLib)}</span></div>
+            <div class="legend-item"><div class="dot" style="background:${colorMap.health}"></div> Health <span>${fmtMoney(tHealth)}</span></div>
         `;
         
-        if (tDisc > 0.01) legendHtml += `<div class="legend-item discount"><div class="dot" style="background:#10b981;"></div> Discount <span>-${fmtMoney(tDisc)}</span></div>`;
-        if (tOther > 0.01) legendHtml += `<div class="legend-item"><div class="dot other"></div> Arrears/Other <span>${fmtMoney(tOther)}</span></div>`;
+        if (tDisc > 0.01) legendHtml += `<div class="legend-item discount"><div class="dot" style="background:${colorMap.discount};"></div> Discount <span>-${fmtMoney(tDisc)}</span></div>`;
+        if (tOther > 0.01) legendHtml += `<div class="legend-item"><div class="dot" style="background:${colorMap.other}"></div> Arrears/Other <span>${fmtMoney(tOther)}</span></div>`;
         
         legend.innerHTML = legendHtml;
     }
@@ -630,7 +641,7 @@ document.getElementById('receiptForm').addEventListener('submit', async (e)=>{
   await persist(); populateYearFilter(); render(); closeModals(); showToast(editingId ? 'Updated successfully' : 'Added successfully');
 });
 
-/* ---------- PDF Parsing (Extracting from Total Demand Column) ---------- */
+/* ---------- PDF Parsing ---------- */
 if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 const PAYMENT_TYPE_MAP = {'ಡಿ.ಡಿ': 'DD', 'ನಗದು': 'Cash', 'ಚೆಕ್': 'Cheque', 'ಆನ್\u200cಲೈನ್': 'Online', 'ಆನ್‌ಲೈನ್': 'Online', 'ಕಾರ್ಡ್': 'Card', 'ಚಲನ್': 'Challan'};
 function num(s){ if (s === undefined || s === null) return 0; const n = parseFloat(String(s).replace(/,/g,'')); return isNaN(n) ? 0 : n; }
@@ -759,6 +770,8 @@ pdfInput.addEventListener('change', async () => {
 });
 
 /* ===================== WiFi P2P MERGE & SHARE ===================== */
+/* Fixed: Implementing robust packet chunking to prevent WebRTC buffer drops */
+
 let peerInstance = null; let activeConnection = null; let hostQrObj = null;
 
 document.getElementById('openP2P').addEventListener('click', () => {
@@ -814,13 +827,35 @@ async function executeP2PMergeAndSend() {
         
         if(appended === 0) throw new Error("No valid PDF binaries found for selected receipts.");
         
-        btn.innerText = "Transmitting...";
-        const payloadBytes = await mergedPdf.save();
+        btn.innerText = "Transmitting Chunked Data...";
+        const payloadBytes = await mergedPdf.save(); // returns Uint8Array
         
-        activeConnection.send({ file: payloadBytes, name: `Tax_Ledger_Export_${new Date().getTime()}.pdf` });
+        // Chunking Implementation: Slice the data to prevent WebRTC crashes
+        const CHUNK_SIZE = 32768; // 32KB chunks
+        const totalChunks = Math.ceil(payloadBytes.length / CHUNK_SIZE);
+        const fileName = `Tax_Ledger_Export_${new Date().getTime()}.pdf`;
+        
+        // Send Header
+        activeConnection.send({ type: 'header', name: fileName, totalSize: payloadBytes.length });
+
+        // Send Chunks Sequentially
+        for (let i = 0; i < totalChunks; i++) {
+            const start = i * CHUNK_SIZE;
+            const end = Math.min(start + CHUNK_SIZE, payloadBytes.length);
+            const chunk = payloadBytes.slice(start, end);
+            
+            activeConnection.send({ type: 'chunk', data: Array.from(chunk) });
+            
+            // Artificial delay every few chunks to prevent buffer overflow
+            if (i % 20 === 0) await new Promise(r => setTimeout(r, 10)); 
+        }
+        
+        // Send Terminator
+        activeConnection.send({ type: 'end' });
         
         showToast("Payload transmitted successfully!");
-        setTimeout(closeP2PHost, 1000);
+        setTimeout(closeP2PHost, 1500);
+        
     } catch(e) { showToast(e.message); }
     btn.innerText = "Merge & Transmit to Device"; btn.disabled = false;
 }
@@ -834,18 +869,56 @@ function closeP2PHost() {
 const receiveId = new URLSearchParams(window.location.search).get('receive_peer');
 if (receiveId) {
     document.getElementById('receive-overlay').style.display = 'flex';
+    
+    // Receiver Chunking Variables
+    let receivedChunks = [];
+    let fileMeta = null;
+    let bytesReceived = 0;
+    
     peerInstance = new Peer();
     peerInstance.on('open', () => {
         activeConnection = peerInstance.connect(receiveId);
-        activeConnection.on('open', () => { document.getElementById('receive-status').innerText = 'Connected! Waiting for Host payload...'; });
+        activeConnection.on('open', () => { 
+            document.getElementById('receive-status').innerText = 'Connected! Waiting for Host payload...'; 
+        });
+        
         activeConnection.on('data', (data) => { 
-            document.getElementById('receive-loader').style.display = 'none'; 
-            document.getElementById('receive-status').innerText = `Received file! Downloading...`; 
+            const statusEl = document.getElementById('receive-status');
+            const progressContainer = document.getElementById('receive-progress-container');
+            const progressFill = document.getElementById('receive-progress');
             
-            const blob = new Blob([data.file], { type: "application/pdf" });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement("a"); 
-            a.href = url; a.download = data.name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            if (data.type === 'header') {
+                fileMeta = data;
+                receivedChunks = [];
+                bytesReceived = 0;
+                document.getElementById('receive-loader').style.display = 'none'; 
+                progressContainer.style.display = 'block';
+                statusEl.innerText = `Receiving file... 0%`;
+                
+            } else if (data.type === 'chunk') {
+                const chunkArray = new Uint8Array(data.data);
+                receivedChunks.push(chunkArray);
+                bytesReceived += chunkArray.length;
+                
+                if(fileMeta) {
+                    const pct = Math.round((bytesReceived / fileMeta.totalSize) * 100);
+                    statusEl.innerText = `Receiving file... ${pct}%`;
+                    progressFill.style.width = `${pct}%`;
+                }
+                
+            } else if (data.type === 'end') {
+                statusEl.innerText = `Assembling file...`;
+                progressContainer.style.display = 'none';
+                
+                const blob = new Blob(receivedChunks, { type: 'application/pdf' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a"); 
+                a.href = url; a.download = fileMeta.name; 
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                
+                statusEl.innerText = `Download Complete!`;
+                document.getElementById('receive-cancel-btn').innerText = "Return to App";
+            }
         });
         activeConnection.on('error', () => { document.getElementById('receive-status').innerText = 'Connection disconnected.'; });
     });
