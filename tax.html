@@ -100,7 +100,6 @@
   .stub-actions button:hover{border-color:var(--muted); background:var(--card);}
   .stub-actions .danger:hover{border-color:var(--gold);color:var(--gold);}
   
-  /* Prominent View PDF Button styling */
   .stub-actions .view-btn { margin-left:auto; border-color:var(--seal-green); color:var(--paper); background: var(--seal-green); }
   .stub-actions .view-btn:hover { background: #02b3a3; border-color: #02b3a3; }
   .stub-actions .view-btn:disabled { background: var(--line); border-color: var(--line); color: var(--muted); cursor: not-allowed; }
@@ -132,7 +131,7 @@
   
   /* Fullscreen PDF Viewer Modal */
   .modal.pdf-modal {
-      max-width: 1100px; width: 95%; height: 90vh; padding: 0; overflow: hidden;
+      max-width: 1100px; width: 95%; height: 90vh; padding: 0; overflow: hidden; display: flex; flex-direction: column;
   }
   .pdf-modal .modal-header {
       padding: 16px 20px; background: var(--paper-2); border-bottom: 1px solid var(--line);
@@ -169,14 +168,8 @@
   .checkbox-wrapper { display: flex; align-items: center; cursor: pointer; gap: 8px; font-size: 13px; }
   input[type="checkbox"] { accent-color: var(--stamp); width: 16px; height: 16px; cursor: pointer; }
 
-  /* Perfectly centered, styled QR Wrapper */
-  .qr-wrapper {
-      display: flex; justify-content: center; align-items: center; margin: 24px 0;
-  }
-  #qrCodeContainer { 
-      background: white; padding: 16px; border-radius: 8px; display: inline-block; 
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-  }
+  .qr-wrapper { display: flex; justify-content: center; align-items: center; margin: 24px 0; }
+  #qrCodeContainer { background: white; padding: 16px; border-radius: 8px; display: inline-block; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
   
   #receive-overlay {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -234,7 +227,7 @@
   </div>
 </div>
 
-<!-- Add/Edit Modal with Scroll Fix -->
+<!-- Add/Edit Modal -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <div class="modal-header">
@@ -245,7 +238,6 @@
     <form id="receiptForm" style="display: flex; flex-direction: column; flex: 1;">
       <input type="hidden" id="recordId">
       
-      <!-- Optional Attachment for manual entries ensures PDF viewing is always possible -->
       <div class="field full" style="margin-bottom: 12px;">
           <label style="color: var(--stamp);">Attach Original PDF (Optional)</label>
           <input type="file" id="manualPdfAttach" accept="application/pdf">
@@ -294,19 +286,17 @@
         </div>
     </div>
     <div class="pdf-container">
-        <!-- Iframe serves as a robust container for the native browser PDF viewer -->
         <iframe id="pdfViewerFrame" type="application/pdf" width="100%" height="100%" style="border:none; background:#525659;"></iframe>
     </div>
   </div>
 </div>
 
-<!-- Sender P2P Setup Modal (Fixed QR Alignment) -->
+<!-- Sender P2P Setup Modal -->
 <div class="overlay" id="p2pHostOverlay">
   <div class="modal" style="text-align: center; max-width: 440px;">
     <h2 style="color: var(--stamp); margin-top:0;">Wi-Fi Direct Share</h2>
     <div class="modal-sub">Scan this code with the receiving device's native camera.</div>
     
-    <!-- Flex wrapper forces tight borders around QR -->
     <div class="qr-wrapper" id="qrWrapper" style="display:none;">
         <div id="qrCodeContainer"></div>
     </div>
@@ -339,7 +329,6 @@ const STORAGE_KEY = 'receipts';
 let receipts = []; let editingId = null; let pendingExtra = null; let pendingPdfBlob = null;
 let currentActiveBlobUrl = null;
 
-// IndexedDB to isolate binary blobs and protect standard storage
 const dbPromise = new Promise((resolve, reject) => {
     const request = indexedDB.open('TaxLedgerDB', 1);
     request.onupgradeneeded = (e) => { e.target.result.createObjectStore('pdfs'); };
@@ -471,27 +460,27 @@ function closeModals(){
 /* ---------------- Dedicated PDF Viewer Modal ---------------- */
 window.openPdfViewer = async function(id, filename) {
     const fileBlob = await getPdfBinary(id);
-    if(!fileBlob) { showToast("PDF missing from local database."); return; }
+    
+    // Safety check against the 0-byte array buffer detactment bug
+    if(!fileBlob || fileBlob.size === 0) { 
+        showToast("Error: Saved PDF is empty or corrupted. Please re-import this receipt."); 
+        return; 
+    }
     
     document.getElementById('pdfViewerTitle').innerText = filename + (filename.toLowerCase().endsWith('.pdf') ? '' : '.pdf');
     
-    // Revoke previous URL to prevent memory leaks
     if(currentActiveBlobUrl) URL.revokeObjectURL(currentActiveBlobUrl);
     
     currentActiveBlobUrl = URL.createObjectURL(fileBlob);
     
-    // Set iframe source to trigger native browser viewer inside modal
     document.getElementById('pdfViewerFrame').src = currentActiveBlobUrl;
-    
-    // Set fallback button for strict mobile environments (iOS)
     document.getElementById('fallbackPdfBtn').href = currentActiveBlobUrl;
-    
     document.getElementById('pdfViewerOverlay').classList.add('open');
 }
 
 window.closePdfViewer = function() {
     document.getElementById('pdfViewerOverlay').classList.remove('open');
-    document.getElementById('pdfViewerFrame').src = ''; // Purge iframe memory
+    document.getElementById('pdfViewerFrame').src = ''; 
     if(currentActiveBlobUrl) {
         URL.revokeObjectURL(currentActiveBlobUrl);
         currentActiveBlobUrl = null;
@@ -523,14 +512,11 @@ window.clearAllData = async function() {
     receipts = [];
     await persist();
     
-    // Wipe binary blobs from IndexedDB
     const db = await dbPromise;
     const tx = db.transaction('pdfs', 'readwrite');
     tx.objectStore('pdfs').clear();
     
-    populateYearFilter(); 
-    render(); 
-    showToast('All app data and cache cleared.');
+    populateYearFilter(); render(); showToast('All app data and cache cleared.');
 };
 
 /* Manual Form Submission */
@@ -539,7 +525,6 @@ document.getElementById('receiptForm').addEventListener('submit', async (e)=>{
   const base = editingId ? (receipts.find(r=>r.id===editingId) || {}) : (pendingExtra || {});
   const newId = editingId ?? (Date.now() + Math.floor(Math.random() * 10000));
   
-  // Capture manually attached PDF if present
   const manualFile = document.getElementById('manualPdfAttach').files[0];
   if(manualFile) {
       pendingPdfBlob = new Blob([await manualFile.arrayBuffer()], { type: 'application/pdf' });
@@ -566,7 +551,7 @@ document.getElementById('receiptForm').addEventListener('submit', async (e)=>{
   await persist(); populateYearFilter(); render(); closeModals(); showToast(editingId ? 'Updated' : 'Added');
 });
 
-/* ---------- PDF Parsing (Untouched) ---------- */
+/* ---------- PDF Parsing (Fixed Data Consumption Bug) ---------- */
 if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 const PAYMENT_TYPE_MAP = {'ಡಿ.ಡಿ': 'DD', 'ನಗದು': 'Cash', 'ಚೆಕ್': 'Cheque', 'ಆನ್\u200cಲೈನ್': 'Online', 'ಆನ್‌ಲೈನ್': 'Online', 'ಕಾರ್ಡ್': 'Card', 'ಚಲನ್': 'Challan'};
 function num(s){ if (s === undefined || s === null) return 0; const n = parseFloat(String(s).replace(/,/g,'')); return isNaN(n) ? 0 : n; }
@@ -635,8 +620,13 @@ pdfInput.addEventListener('change', async () => {
   let ok = 0;
   for (const file of files){
     try{
-      const buf = await file.arrayBuffer(); const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-      const lines = await pdfToLines(pdf); const fields = extractFieldsFromLines(lines);
+      const buf = await file.arrayBuffer(); 
+      // Clone the buffer so PDF.js doesn't consume the data and leave a 0-byte file
+      const bufForParsing = buf.slice(0);
+      
+      const pdf = await pdfjsLib.getDocument({ data: bufForParsing }).promise;
+      const lines = await pdfToLines(pdf); 
+      const fields = extractFieldsFromLines(lines);
       
       const newId = Date.now() + Math.floor(Math.random()*1000);
       const fileBlob = new Blob([buf], { type: 'application/pdf' });
@@ -700,7 +690,7 @@ async function executeP2PMergeAndSend() {
         
         for(const id of selectedIds) {
             const fileBlob = await getPdfBinary(id);
-            if(fileBlob) {
+            if(fileBlob && fileBlob.size > 0) {
                 const srcDoc = await PDFLib.PDFDocument.load(await fileBlob.arrayBuffer());
                 const copiedPages = await mergedPdf.copyPages(srcDoc, srcDoc.getPageIndices());
                 copiedPages.forEach(p => mergedPdf.addPage(p));
@@ -708,7 +698,7 @@ async function executeP2PMergeAndSend() {
             }
         }
         
-        if(appended === 0) throw new Error("No PDF binaries found for selected receipts.");
+        if(appended === 0) throw new Error("No valid PDF binaries found for selected receipts.");
         
         btn.innerText = "Transmitting...";
         const payloadBytes = await mergedPdf.save();
