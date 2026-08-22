@@ -27,9 +27,10 @@
   body{
     font-family:'Inter',sans-serif; color:var(--ink);
     background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
-    background-size: 22px 22px; min-height:100vh; padding:24px 16px 80px;
+    background-size: 22px 22px; min-height:100vh; padding:24px 16px 40px;
+    display: flex; flex-direction: column;
   }
-  .wrap{max-width:1340px;margin:0 auto;}
+  .wrap{max-width:1340px;margin:0 auto; flex: 1; width: 100%; display: flex; flex-direction: column;}
 
   header{
     display:flex;justify-content:space-between;align-items:flex-end;
@@ -65,7 +66,7 @@
   .controls input[type=text]{flex:1;min-width:200px;}
   .controls .action-group { display: flex; gap: 8px; margin-left: auto; align-items: center; flex-wrap: wrap;}
 
-  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:16px; width: 100%; }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:16px; width: 100%; margin-bottom: auto;}
   
   .stub{
     background:var(--card); border:1px solid var(--line); border-radius:8px; position:relative;
@@ -75,31 +76,46 @@
   .stub:hover { transform: translateY(-2px); border-color: var(--muted); box-shadow: var(--shadow); }
   @keyframes rise{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
   
-  .stub-header-row{ display:flex;justify-content:space-between;align-items:center; gap: 10px; }
+  .stub-header-row{ display:flex;justify-content:space-between;align-items:center; gap: 10px; border-bottom: 1px solid var(--line); padding-bottom: 12px;}
   .receipt-no{ font-family:'JetBrains Mono',monospace;font-size:12px; color:var(--stamp);font-weight:600; }
   .fy-badge{ font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700; color:var(--seal-green);letter-spacing:.04em; background: rgba(3, 218, 198, 0.1); padding: 4px 8px; border-radius: 12px; }
   
   .owner{ font-family:'Fraunces',serif;font-weight:600;font-size:17px;line-height:1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 4px; }
   
-  .meta-grid{ display:grid;grid-template-columns:1fr 1fr; gap:10px 16px; border-top:1px solid var(--line);border-bottom:1px solid var(--line); padding:12px 0; }
+  .meta-grid{ display:grid;grid-template-columns:1fr 1fr; gap:10px 16px; padding:8px 0; }
   .meta-field{display:flex;flex-direction:column;gap:2px;}
   .meta-field .m-label{ font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase; letter-spacing:.08em;color:var(--muted); }
   .meta-field .m-value{ font-size:12px;color:var(--ink);line-height:1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .meta-field.wide{grid-column:1/-1;}
   
-  .amount-row{ display:flex;justify-content:space-between;align-items:flex-end; padding-top: 4px; }
+  .amount-row{ display:flex;justify-content:space-between;align-items:flex-end; padding-top: 8px; border-top:1px dashed var(--line); }
   .amount-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);}
   .amount-value{ font-family:'JetBrains Mono',monospace;font-weight:700;font-size:20px;color:var(--ink); }
   
-  .stub-actions{ display:flex;gap:8px; align-items: center; margin-top: 4px; flex-wrap: wrap;}
+  .stub-actions{ display:flex;gap:8px; align-items: center; margin-top: 8px; flex-wrap: wrap;}
   .stub-actions button{
     font-family:'Inter',sans-serif;font-size:11px;font-weight:600; background:var(--paper-2);
-    border:1px solid var(--line);padding:6px 12px;border-radius:4px; cursor:pointer;color:var(--ink); transition: border-color 0.15s ease;
+    border:1px solid var(--line);padding:7px 12px;border-radius:4px; cursor:pointer;color:var(--ink); transition: border-color 0.15s ease, background 0.15s ease;
   }
-  .stub-actions button:hover{border-color:var(--muted);}
+  .stub-actions button:hover{border-color:var(--muted); background:var(--card);}
   .stub-actions .danger:hover{border-color:var(--gold);color:var(--gold);}
-  .stub-actions .view-btn { margin-left:auto; border-color:var(--seal-green); color:var(--seal-green); background: rgba(3, 218, 198, 0.05); }
-  .stub-actions .view-btn:hover { background: rgba(3, 218, 198, 0.15); border-color: var(--seal-green); }
+  
+  /* Prominent View PDF Button styling */
+  .stub-actions .view-btn { margin-left:auto; border-color:var(--seal-green); color:var(--paper); background: var(--seal-green); }
+  .stub-actions .view-btn:hover { background: #02b3a3; border-color: #02b3a3; }
+  .stub-actions .view-btn:disabled { background: var(--line); border-color: var(--line); color: var(--muted); cursor: not-allowed; }
+
+  /* Footer Controls */
+  .app-footer {
+      display: flex; justify-content: space-between; align-items: center; 
+      margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); 
+      color: var(--muted); font-size: 13px; font-family: 'JetBrains Mono', monospace;
+  }
+  .btn-danger-text {
+      background: transparent; border: none; color: var(--gold); cursor: pointer; 
+      font-family: 'Inter', sans-serif; font-size: 13px; padding: 6px 12px; font-weight: 600;
+  }
+  .btn-danger-text:hover { text-decoration: underline; background: rgba(207, 102, 121, 0.1); border-radius: 4px; }
 
   /* Modals & Overlays - Keyboard Safe */
   .overlay{
@@ -111,9 +127,21 @@
   .modal{
     background:var(--card);border:1px solid var(--line); max-width:640px;width:100%;border-radius:8px;
     box-shadow:var(--shadow); padding:24px; animation:pop .2s ease both;
-    /* Crucial for mobile keyboards */
     max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column;
   }
+  
+  /* Fullscreen PDF Viewer Modal */
+  .modal.pdf-modal {
+      max-width: 1100px; width: 95%; height: 90vh; padding: 0; overflow: hidden;
+  }
+  .pdf-modal .modal-header {
+      padding: 16px 20px; background: var(--paper-2); border-bottom: 1px solid var(--line);
+      display: flex; justify-content: space-between; align-items: center; margin: 0; flex-shrink: 0;
+  }
+  .pdf-modal .pdf-container {
+      flex: 1; width: 100%; background: #525659; position: relative; overflow: hidden;
+  }
+  
   @keyframes pop{from{opacity:0;transform:translateY(10px) scale(.98);}to{opacity:1;transform:translateY(0) scale(1);}}
   
   .modal-header { margin-bottom: 16px; flex-shrink: 0; }
@@ -122,7 +150,7 @@
   
   .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;}
   .form-grid .full{grid-column:1/-1;}
-  @media(max-width: 500px){ .form-grid { grid-template-columns:1fr; } } /* Stack inputs on small mobile */
+  @media(max-width: 500px){ .form-grid { grid-template-columns:1fr; } } 
   
   .field label{ display:block;font-family:'JetBrains Mono',monospace;font-size:10px; text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:5px; }
   .field input{ width:100%;font-family:'Inter',sans-serif;font-size:13px; background:var(--paper);border:1px solid var(--line);border-radius:4px; padding:10px;color:var(--ink); }
@@ -132,17 +160,12 @@
   
   .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px; flex-shrink: 0; padding-top: 10px; background: var(--card); position: sticky; bottom: -24px;}
   
-  .btn-secondary{ background:transparent;border:1px solid var(--line);padding:10px 16px;border-radius:4px; font-family:'Inter',sans-serif;font-weight:600;font-size:13px;cursor:pointer;color:var(--ink); }
-  .btn-primary{ background:var(--ink);color:var(--paper);border:none;padding:10px 18px;border-radius:4px; font-family:'Inter',sans-serif;font-weight:600;font-size:13px;cursor:pointer; }
-  .btn-primary:hover{background:var(--stamp);}
-
   .toast{
     position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(10px); background:var(--stamp);color:var(--paper);
     padding:10px 18px;border-radius:4px; font-size:13px;font-weight:600;font-family:'Inter',sans-serif;opacity:0;pointer-events:none; transition:all .25s ease;z-index:60; box-shadow: var(--shadow);
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-  /* QR and Checkbox specific */
   .checkbox-wrapper { display: flex; align-items: center; cursor: pointer; gap: 8px; font-size: 13px; }
   input[type="checkbox"] { accent-color: var(--stamp); width: 16px; height: 16px; cursor: pointer; }
 
@@ -155,7 +178,6 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
   }
   
-  /* Receiver Full Screen Overlay */
   #receive-overlay {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: var(--paper); z-index: 1000; flex-direction: column; align-items: center; justify-content: center;
@@ -204,6 +226,12 @@
   </div>
 
   <div class="grid" id="grid"></div>
+
+  <!-- Clear Data Footer -->
+  <div class="app-footer">
+      <button class="btn-danger-text" onclick="clearAllData()">🗑 Clear all data</button>
+      <div id="footerRecordCount">0 records saved</div>
+  </div>
 </div>
 
 <!-- Add/Edit Modal with Scroll Fix -->
@@ -217,7 +245,7 @@
     <form id="receiptForm" style="display: flex; flex-direction: column; flex: 1;">
       <input type="hidden" id="recordId">
       
-      <!-- Optional Attachment for manual entries -->
+      <!-- Optional Attachment for manual entries ensures PDF viewing is always possible -->
       <div class="field full" style="margin-bottom: 12px;">
           <label style="color: var(--stamp);">Attach Original PDF (Optional)</label>
           <input type="file" id="manualPdfAttach" accept="application/pdf">
@@ -252,6 +280,23 @@
         <button type="submit" class="btn-primary" id="saveBtn">Save receipt</button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- Dedicated Full-Screen PDF Viewer Modal -->
+<div class="overlay" id="pdfViewerOverlay">
+  <div class="modal pdf-modal">
+    <div class="modal-header">
+        <h2 id="pdfViewerTitle" style="font-size:15px; margin:0; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color: var(--ink);">Document.pdf</h2>
+        <div style="display:flex; gap:8px;">
+            <a id="fallbackPdfBtn" target="_blank" class="btn-secondary" style="padding: 6px 12px; text-decoration:none; display:flex; align-items:center; font-size:11px;">Open in App</a>
+            <button class="btn-secondary" onclick="closePdfViewer()" style="padding: 6px 12px;">Close</button>
+        </div>
+    </div>
+    <div class="pdf-container">
+        <!-- Iframe serves as a robust container for the native browser PDF viewer -->
+        <iframe id="pdfViewerFrame" type="application/pdf" width="100%" height="100%" style="border:none; background:#525659;"></iframe>
+    </div>
   </div>
 </div>
 
@@ -292,6 +337,7 @@
 /* ===================== LOGIC SEPARATION ===================== */
 const STORAGE_KEY = 'receipts';
 let receipts = []; let editingId = null; let pendingExtra = null; let pendingPdfBlob = null;
+let currentActiveBlobUrl = null;
 
 // IndexedDB to isolate binary blobs and protect standard storage
 const dbPromise = new Promise((resolve, reject) => {
@@ -361,29 +407,45 @@ function render(){
   document.getElementById('statTotal').textContent = fmtMoney(receipts.reduce((s,r)=>s+(Number(r.totalAmount)||0),0));
   document.getElementById('statProps').textContent = new Set(receipts.map(r=>r.pid||r.propNo).filter(Boolean)).size;
   document.getElementById('statYears').textContent = new Set(receipts.map(r=>r.finYear).filter(Boolean)).size;
+  
+  document.getElementById('footerRecordCount').textContent = `${receipts.length} records saved`;
 
   if(filtered.length === 0){
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><h3>No receipts filed</h3></div>`; return;
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1; text-align:center; padding: 40px; border: 1px dashed var(--line); border-radius: 8px;">
+        <h3 style="margin:0; font-family:'Fraunces', serif;">No receipts filed</h3>
+    </div>`; 
+    return;
   }
 
   grid.innerHTML = filtered.map(r => `
     <div class="stub">
       <div class="stub-header-row">
-        <label class="checkbox-wrapper"><input type="checkbox" class="record-cb" value="${r.id}"></label>
-        <span class="receipt-no">${escapeHtml(r.receiptNo || 'No ID')}</span>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <label class="checkbox-wrapper"><input type="checkbox" class="record-cb" value="${r.id}"></label>
+            <span class="receipt-no">${escapeHtml(r.receiptNo || 'No ID')}</span>
+        </div>
         <span class="fy-badge">${escapeHtml((r.finYear||'').replace(/[^0-9\-]/g,'')||'FY')}</span>
       </div>
+      
       <div class="owner" title="${escapeHtml(r.ownerName)}">${escapeHtml(r.ownerName || 'Unnamed owner')}</div>
+      
       <div class="meta-grid">
         <div class="meta-field"><span class="m-label">PID</span><span class="m-value">${escapeHtml(r.pid || '—')}</span></div>
         <div class="meta-field"><span class="m-label">Prop No</span><span class="m-value">${escapeHtml(r.propNo || '—')}</span></div>
         <div class="meta-field wide"><span class="m-label">Loc</span><span class="m-value">${escapeHtml([r.village, r.panchayat].filter(Boolean).join(', ')) || '—'}</span></div>
       </div>
-      <div class="amount-row"><span class="amount-label">Total paid</span><span class="amount-value">${fmtMoney(r.totalAmount)}</span></div>
+      
+      <div class="amount-row">
+          <span class="amount-label">Total paid</span>
+          <span class="amount-value">${fmtMoney(r.totalAmount)}</span>
+      </div>
+      
       <div class="stub-actions">
         <button onclick="editReceipt(${r.id})">Edit</button>
-        <button class="danger" onclick="deleteReceipt(${r.id})">Del</button>
-        ${r.hasPdf ? `<button class="view-btn" onclick="viewPdf(${r.id})">View PDF</button>` : ''}
+        <button class="danger" onclick="deleteReceipt(${r.id})">✕ Delete</button>
+        <button class="view-btn" onclick="openPdfViewer(${r.id}, '${escapeHtml(r.sourceFile || r.receiptNo || 'Document')}')" ${!r.hasPdf ? 'disabled title="No PDF Attached"' : ''}>
+            📄 View PDF
+        </button>
       </div>
     </div>
   `).join('');
@@ -401,10 +463,42 @@ document.getElementById('search').addEventListener('input', () => setTimeout(ren
 document.getElementById('filterYear').addEventListener('change', render);
 
 function closeModals(){
-  document.querySelectorAll('.overlay').forEach(el => { if(el.id !== 'receive-overlay') el.classList.remove('open') });
+  document.querySelectorAll('.overlay').forEach(el => { if(el.id !== 'receive-overlay' && el.id !== 'pdfViewerOverlay') el.classList.remove('open') });
   document.getElementById('receiptForm').reset();
   editingId = null; pendingExtra = null; pendingPdfBlob = null;
 }
+
+/* ---------------- Dedicated PDF Viewer Modal ---------------- */
+window.openPdfViewer = async function(id, filename) {
+    const fileBlob = await getPdfBinary(id);
+    if(!fileBlob) { showToast("PDF missing from local database."); return; }
+    
+    document.getElementById('pdfViewerTitle').innerText = filename + (filename.toLowerCase().endsWith('.pdf') ? '' : '.pdf');
+    
+    // Revoke previous URL to prevent memory leaks
+    if(currentActiveBlobUrl) URL.revokeObjectURL(currentActiveBlobUrl);
+    
+    currentActiveBlobUrl = URL.createObjectURL(fileBlob);
+    
+    // Set iframe source to trigger native browser viewer inside modal
+    document.getElementById('pdfViewerFrame').src = currentActiveBlobUrl;
+    
+    // Set fallback button for strict mobile environments (iOS)
+    document.getElementById('fallbackPdfBtn').href = currentActiveBlobUrl;
+    
+    document.getElementById('pdfViewerOverlay').classList.add('open');
+}
+
+window.closePdfViewer = function() {
+    document.getElementById('pdfViewerOverlay').classList.remove('open');
+    document.getElementById('pdfViewerFrame').src = ''; // Purge iframe memory
+    if(currentActiveBlobUrl) {
+        URL.revokeObjectURL(currentActiveBlobUrl);
+        currentActiveBlobUrl = null;
+    }
+}
+
+/* ------------------------------------------------------------ */
 
 document.getElementById('openAdd').addEventListener('click', ()=>{ document.getElementById('overlay').classList.add('open'); });
 
@@ -422,19 +516,22 @@ window.deleteReceipt = async function(id){
   populateYearFilter(); render(); showToast('Receipt deleted');
 };
 
-/* Bulletproof Mobile PDF Viewer */
-window.viewPdf = async function(id) {
-    const fileBlob = await getPdfBinary(id);
-    if(!fileBlob) { showToast("Original PDF missing from database."); return; }
+/* Clear Cache / Reset Functionality */
+window.clearAllData = async function() {
+    if(!confirm('Are you absolutely sure you want to delete ALL receipts and PDF files? This action cannot be undone.')) return;
     
-    // Creates a secure blob URL and opens it via the browser's native PDF handler in a new tab.
-    // This entirely avoids iframe bugs on mobile Safari/Chrome.
-    const url = URL.createObjectURL(fileBlob);
-    window.open(url, '_blank');
+    receipts = [];
+    await persist();
     
-    // Revoke memory after giving the new tab enough time to load the file
-    setTimeout(() => { URL.revokeObjectURL(url); }, 10000); 
-}
+    // Wipe binary blobs from IndexedDB
+    const db = await dbPromise;
+    const tx = db.transaction('pdfs', 'readwrite');
+    tx.objectStore('pdfs').clear();
+    
+    populateYearFilter(); 
+    render(); 
+    showToast('All app data and cache cleared.');
+};
 
 /* Manual Form Submission */
 document.getElementById('receiptForm').addEventListener('submit', async (e)=>{
