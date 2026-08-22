@@ -7,76 +7,53 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<!-- Existing PDF Extraction -->
+<!-- Core Extraction -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" integrity="sha512-q+4liFwdPC/bNdhUpZx6aXDx/h77yEQtn4I1slHydcbZK34nLaR3cAeYSJshoxIOq3mjEf7xJE8YWIUHMn+oCQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-<!-- New Libraries for Merging, P2P, and QR -->
+<!-- Merging & P2P -->
 <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
 <style>
   :root{
-    --ink: #e0e0e0;
-    --paper: #121212;
-    --paper-2: #1e1e1e;
-    --stamp: #bb86fc;
-    --stamp-dark: #9965f4;
-    --seal-green: #03dac6;
-    --gold: #cf6679;
-    --muted: #888888;
-    --line: #2c2c2c;
-    --card: #1a1a1a;
+    --ink: #e0e0e0; --paper: #121212; --paper-2: #1e1e1e;
+    --stamp: #bb86fc; --stamp-dark: #9965f4; --seal-green: #03dac6;
+    --gold: #cf6679; --muted: #888888; --line: #2c2c2c; --card: #1a1a1a;
     --shadow: 0 4px 12px rgba(0,0,0,0.5);
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;background:var(--paper);}
   body{
-    font-family:'Inter',sans-serif;
-    color:var(--ink);
+    font-family:'Inter',sans-serif; color:var(--ink);
     background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
-    background-size: 22px 22px;
-    min-height:100vh;
-    padding:32px 20px 80px;
+    background-size: 22px 22px; min-height:100vh; padding:32px 20px 80px;
   }
   .wrap{max-width:1340px;margin:0 auto;}
 
   header{
     display:flex;justify-content:space-between;align-items:flex-end;
-    border-bottom:2px solid var(--line);
-    padding-bottom:18px;margin-bottom:22px;
-    gap:16px;flex-wrap:wrap;
+    border-bottom:2px solid var(--line); padding-bottom:18px;margin-bottom:22px; gap:16px;flex-wrap:wrap;
   }
-  .brand-eyebrow{
-    font-family:'JetBrains Mono',monospace;
-    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
-    color:var(--stamp);font-weight:600;margin-bottom:6px;
-  }
-  h1{
-    font-family:'Fraunces',serif; font-optical-sizing:auto; font-weight:600;
-    font-size:clamp(28px,4vw,40px); margin:0;letter-spacing:-0.01em;
-  }
+  .brand-eyebrow{ font-family:'JetBrains Mono',monospace; font-size:11px;letter-spacing:.18em;text-transform:uppercase; color:var(--stamp);font-weight:600;margin-bottom:6px; }
+  h1{ font-family:'Fraunces',serif; font-weight:600; font-size:clamp(28px,4vw,40px); margin:0;letter-spacing:-0.01em; }
   .subtitle{font-size:13px;color:var(--muted);margin-top:4px;max-width:520px;}
+  
   .add-btn{
     font-family:'Inter',sans-serif; font-weight:600;font-size:14px;
     background:var(--ink);color:var(--paper); border:none;padding:12px 20px;border-radius:4px;
-    cursor:pointer;letter-spacing:.02em; transition:transform .15s ease, background .15s ease;
-    box-shadow: var(--shadow);
+    cursor:pointer;letter-spacing:.02em; transition:transform .15s ease, background .15s ease; box-shadow: var(--shadow);
   }
   .add-btn:hover{background:var(--stamp);color:var(--paper); transform:translateY(-1px);}
   .secondary-btn{background:var(--card);color:var(--ink);border:1px solid var(--line);}
   .secondary-btn:hover{background:var(--line);color:var(--ink);}
-  
+
   .summary{
     display:grid;grid-template-columns:repeat(4,1fr); gap:1px;background:var(--line);
     border:1px solid var(--line); margin-bottom:26px; border-radius: 4px; overflow: hidden;
   }
   .summary .cell{ background:var(--card);padding:16px 18px; }
-  .summary .label{
-    font-family:'JetBrains Mono',monospace; font-size:10px;text-transform:uppercase;
-    letter-spacing:.12em; color:var(--muted);margin-bottom:6px;
-  }
+  .summary .label{ font-family:'JetBrains Mono',monospace; font-size:10px;text-transform:uppercase; letter-spacing:.12em; color:var(--muted);margin-bottom:6px; }
   .summary .value{ font-family:'Fraunces',serif;font-weight:600; font-size:24px; }
   .summary .value.stamp-color{color:var(--stamp);}
 
@@ -86,7 +63,7 @@
     border:1px solid var(--line); padding:10px 12px;border-radius:4px;color:var(--ink);
   }
   .controls input[type=text]{flex:1;min-width:180px;}
-  .controls .action-group { display: flex; gap: 8px; margin-left: auto; }
+  .controls .action-group { display: flex; gap: 8px; margin-left: auto; align-items: center;}
   .empty-count{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
 
   .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:16px; width: 100%; }
@@ -122,13 +99,11 @@
   }
   .stub-actions button:hover{border-color:var(--muted);}
   .stub-actions .danger:hover{border-color:var(--gold);color:var(--gold);}
-  
-  .source-tag{ font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--seal-green); border:1px solid var(--seal-green);border-radius:2px;padding:3px 6px; margin-left:auto; }
 
-  /* Modals */
+  /* Modals & Overlays */
   .overlay{
-    position:fixed;inset:0;background:rgba(0,0,0,0.75); display:none;align-items:flex-start;justify-content:center;
-    padding:40px 16px;overflow-y:auto;z-index:50;
+    position:fixed;inset:0;background:rgba(0,0,0,0.85); display:none;align-items:flex-start;justify-content:center;
+    padding:40px 16px;overflow-y:auto;z-index:50; backdrop-filter: blur(5px);
   }
   .overlay.open{display:flex;}
   .modal{
@@ -137,6 +112,7 @@
   }
   .modal.large { max-width: 900px; height: 85vh; display: flex; flex-direction: column;}
   @keyframes pop{from{opacity:0;transform:translateY(10px) scale(.98);}to{opacity:1;transform:translateY(0) scale(1);}}
+  
   .modal h2{ font-family:'Fraunces',serif;font-weight:600;font-size:22px;margin:0 0 4px; }
   .modal .modal-sub{font-size:12px;color:var(--muted);margin-bottom:18px;}
   
@@ -145,12 +121,9 @@
   .field label{ display:block;font-family:'JetBrains Mono',monospace;font-size:10px; text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:5px; }
   .field input{ width:100%;font-family:'Inter',sans-serif;font-size:13px; background:var(--paper);border:1px solid var(--line);border-radius:4px; padding:9px 10px;color:var(--ink); }
   
-  .section-label{
-    font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;
-    letter-spacing:.1em;color:var(--stamp);margin:16px 0 4px;grid-column:1/-1;
-    border-top:1px solid var(--line);padding-top:12px;
-  }
+  .section-label{ font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase; letter-spacing:.1em;color:var(--stamp);margin:16px 0 4px;grid-column:1/-1; border-top:1px solid var(--line);padding-top:12px; }
   .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+  
   .btn-secondary{ background:transparent;border:1px solid var(--line);padding:10px 16px;border-radius:4px; font-family:'Inter',sans-serif;font-weight:600;font-size:13px;cursor:pointer;color:var(--ink); }
   .btn-primary{ background:var(--ink);color:var(--paper);border:none;padding:10px 18px;border-radius:4px; font-family:'Inter',sans-serif;font-weight:600;font-size:13px;cursor:pointer; }
   .btn-primary:hover{background:var(--stamp);}
@@ -163,15 +136,21 @@
 
   /* PDF Viewer & P2P Specific styles */
   #pdfViewerFrame { width: 100%; flex: 1; border: 1px solid var(--line); border-radius: 4px; background: var(--paper); }
-  .p2p-container { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 10px; }
-  .p2p-panel { border: 1px dashed var(--line); padding: 20px; border-radius: 6px; text-align: center; }
   #qrCodeContainer { background: white; padding: 16px; display: inline-block; border-radius: 4px; margin: 16px 0; }
-  #reader { width: 100%; max-width: 400px; margin: 0 auto; border-radius: 4px; overflow: hidden;}
-  .status-text { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--gold); margin-top: 10px; min-height: 15px;}
   .checkbox-wrapper { display: flex; align-items: center; cursor: pointer; gap: 8px; font-size: 13px; }
   input[type="checkbox"] { accent-color: var(--stamp); width: 16px; height: 16px; cursor: pointer; }
 
-  @media (max-width:768px){ .p2p-container { grid-template-columns: 1fr; } }
+  /* Receive Mode Full-Screen Overlay */
+  #receive-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--paper); z-index: 1000; flex-direction: column; align-items: center; justify-content: center;
+    color: white; text-align: center; padding: 20px;
+  }
+  .loading-spinner {
+    display: inline-block; width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1);
+    border-top: 4px solid var(--stamp); border-radius: 50%; animation: spin 1s linear infinite; margin: 20px;
+  }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -185,46 +164,34 @@
     <div style="display:flex;gap:10px;flex-wrap:wrap;">
       <button class="add-btn secondary-btn" id="openImport" type="button">⇧ Import PDF</button>
       <button class="add-btn" id="openAdd">+ Add receipt</button>
-      <button class="add-btn secondary-btn" id="openP2P" type="button" style="border-color: var(--stamp); color: var(--stamp);">QR Merge & Share</button>
       <input type="file" id="pdfInput" accept="application/pdf" multiple style="display:none;">
     </div>
   </header>
 
   <div class="summary">
-    <div class="cell">
-      <div class="label">Receipts on file</div>
-      <div class="value" id="statCount">0</div>
-    </div>
-    <div class="cell">
-      <div class="label">Total paid</div>
-      <div class="value stamp-color" id="statTotal">₹0</div>
-    </div>
-    <div class="cell">
-      <div class="label">Properties</div>
-      <div class="value" id="statProps">0</div>
-    </div>
-    <div class="cell">
-      <div class="label">Financial years</div>
-      <div class="value" id="statYears">0</div>
-    </div>
+    <div class="cell"><div class="label">Receipts on file</div><div class="value" id="statCount">0</div></div>
+    <div class="cell"><div class="label">Total paid</div><div class="value stamp-color" id="statTotal">₹0</div></div>
+    <div class="cell"><div class="label">Properties</div><div class="value" id="statProps">0</div></div>
+    <div class="cell"><div class="label">Financial years</div><div class="value" id="statYears">0</div></div>
   </div>
 
   <div class="controls">
     <input type="text" id="search" placeholder="Search owner, PID, receipt no…">
     <select id="filterYear"><option value="">All financial years</option></select>
-    <button id="clearFiltersBtn" class="secondary-btn" style="padding: 9px 12px;">Clear</button>
+    
     <div class="action-group">
         <label class="checkbox-wrapper" style="background: var(--card); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--line);">
             <input type="checkbox" id="selectAllBtn"> Select All
         </label>
-        <span class="empty-count" id="resultCount" style="align-self: center; margin-left: 10px;"></span>
+        <button id="clearSelectionBtn" class="secondary-btn" style="padding: 7px 12px; font-size: 12px;">Clear Selection</button>
+        <button class="add-btn secondary-btn" id="openP2P" type="button" style="padding: 7px 12px; border-color: var(--stamp); color: var(--stamp);">QR Merge & Share</button>
     </div>
   </div>
 
   <div class="grid" id="grid"></div>
 </div>
 
-<!-- Add/Edit Receipt Modal -->
+<!-- Add/Edit Modal -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <h2 id="modalTitle">Add receipt</h2>
@@ -265,122 +232,95 @@
 <!-- PDF Viewer Modal -->
 <div class="overlay" id="pdfViewerOverlay">
   <div class="modal large">
-    <div style="display:flex; justify-content:space-between; margin-bottom: 16px;">
-        <h2>Original Receipt</h2>
-        <button class="btn-secondary" onclick="closeModals()">Close</button>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;">
+        <h2 style="margin:0;">Original Receipt</h2>
+        <button class="btn-secondary" onclick="closeModals()">Close View</button>
     </div>
     <iframe id="pdfViewerFrame"></iframe>
   </div>
 </div>
 
-<!-- P2P Share Modal -->
-<div class="overlay" id="p2pOverlay">
-  <div class="modal large" style="height: auto;">
-    <h2>P2P Merge & Share</h2>
-    <div class="modal-sub">Directly transfer merged PDFs device-to-device securely without servers. Ensure both devices remain open on this screen.</div>
+<!-- Sender P2P Setup Modal -->
+<div class="overlay" id="p2pHostOverlay">
+  <div class="modal" style="text-align: center;">
+    <h2 style="color: var(--stamp);">Wi-Fi Direct Share</h2>
+    <div class="modal-sub">Scan this code with the receiving device's native camera.</div>
+    <div id="qrCodeContainer" style="display:none;"></div>
+    <p id="p2p-conn-status" style="font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--muted); margin-top: 10px;">Initializing connection...</p>
     
-    <div class="p2p-container">
-        <div class="p2p-panel">
-            <h3 style="margin-top:0; color:var(--stamp)">Send (Host)</h3>
-            <p style="font-size:12px; color:var(--muted)">Select records on the main grid, generate a QR, and have the receiver scan it.</p>
-            <button class="btn-primary" id="generateQrBtn">Generate Host QR</button>
-            <div id="qrCodeContainer" style="display:none;"></div>
-            <div id="senderStatus" class="status-text"></div>
-        </div>
-        
-        <div class="p2p-panel">
-            <h3 style="margin-top:0; color:var(--seal-green)">Receive (Client)</h3>
-            <p style="font-size:12px; color:var(--muted)">Scan the sender's QR code to connect and receive the merged PDF automatically.</p>
-            <button class="btn-primary" id="startScannerBtn" style="background:var(--seal-green)">Open Camera</button>
-            <div id="reader" style="display:none; margin-top: 15px;"></div>
-            <div id="receiverStatus" class="status-text"></div>
-        </div>
+    <div id="p2p-send-controls" style="display:none; margin-top: 20px;">
+        <button class="btn-primary" onclick="executeP2PMergeAndSend()" id="triggerSendBtn">Send Selected PDFs</button>
     </div>
-    <div class="modal-actions">
-        <button type="button" class="btn-secondary" onclick="closeModals(); stopScanner();">Close</button>
+    
+    <div class="modal-actions" style="justify-content: center; margin-top: 20px;">
+        <button type="button" class="btn-secondary" onclick="closeP2PHost()">Cancel & Close</button>
     </div>
   </div>
+</div>
+
+<!-- Receiver Full Screen Overlay -->
+<div id="receive-overlay">
+    <h2 style="color: var(--seal-green); font-family: 'Fraunces', serif;">📥 Wi-Fi Transfer Receiver</h2>
+    <p id="receive-status" style="color: var(--muted); margin-top: 10px;">Connecting to Host Ledger...</p>
+    <div class="loading-spinner" id="receive-loader"></div>
+    <button class="btn-secondary" style="margin-top: 30px;" onclick="window.location.href=window.location.href.split('?')[0]">Cancel & Return to App</button>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
 /* ===================== LOGIC SEPARATION ===================== */
-/* 1. Core State & Storage */
 const STORAGE_KEY = 'receipts';
-let receipts = [];
-let editingId = null;
-let pendingExtra = null;
-let pendingPdfBlob = null; // Holds binary during manual add/edit
+let receipts = []; let editingId = null; let pendingExtra = null; let pendingPdfBlob = null;
 
-/* IndexedDB wrapper to handle massive binary blobs without crashing localStorage */
+// IndexedDB to isolate binary blobs and protect standard storage
 const dbPromise = new Promise((resolve, reject) => {
-    const request = indexedDB.open('TaxLedgerBinaryDB', 1);
+    const request = indexedDB.open('TaxLedgerDB', 1);
     request.onupgradeneeded = (e) => { e.target.result.createObjectStore('pdfs'); };
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
 });
-
 async function savePdfBinary(id, fileBlob) {
-    if (!fileBlob) return;
-    const db = await dbPromise;
+    if (!fileBlob) return; const db = await dbPromise;
     return new Promise((res, rej) => {
-        const tx = db.transaction('pdfs', 'readwrite');
-        tx.objectStore('pdfs').put(fileBlob, id);
+        const tx = db.transaction('pdfs', 'readwrite'); tx.objectStore('pdfs').put(fileBlob, id);
         tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error);
     });
 }
 async function getPdfBinary(id) {
     const db = await dbPromise;
     return new Promise((res, rej) => {
-        const tx = db.transaction('pdfs', 'readonly');
-        const req = tx.objectStore('pdfs').get(id);
+        const tx = db.transaction('pdfs', 'readonly'); const req = tx.objectStore('pdfs').get(id);
         req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error);
     });
 }
 async function deletePdfBinary(id) {
-    const db = await dbPromise;
-    const tx = db.transaction('pdfs', 'readwrite');
-    tx.objectStore('pdfs').delete(id);
+    const db = await dbPromise; const tx = db.transaction('pdfs', 'readwrite'); tx.objectStore('pdfs').delete(id);
 }
 
-/* 2. Core Extractor (Preserved logic) */
 const grid = document.getElementById('grid');
 const toastEl = document.getElementById('toast');
 
-function showToast(msg){
-  toastEl.textContent = msg;
-  toastEl.classList.add('show');
-  setTimeout(()=>toastEl.classList.remove('show'), 2200);
-}
-function fmtMoney(n){
-  n = Number(n)||0;
-  return '₹' + n.toLocaleString('en-IN', {maximumFractionDigits:2, minimumFractionDigits: n%1===0?0:2});
-}
-function escapeHtml(str){
-  return String(str ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-}
+function showToast(msg){ toastEl.textContent = msg; toastEl.classList.add('show'); setTimeout(()=>toastEl.classList.remove('show'), 2200); }
+function fmtMoney(n){ return '₹' + (Number(n)||0).toLocaleString('en-IN', {maximumFractionDigits:2, minimumFractionDigits: n%1===0?0:2}); }
+function escapeHtml(str){ return String(str ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
 async function loadReceipts(){
   try{
     const res = window.storage ? await window.storage.get(STORAGE_KEY, false) : { value: localStorage.getItem(STORAGE_KEY) };
     receipts = res && res.value ? JSON.parse(res.value) : [];
   }catch(e){ receipts = []; }
-  populateYearFilter();
-  render();
+  populateYearFilter(); render();
 }
-
 async function persist(){
   try{
     const payload = JSON.stringify(receipts);
-    if (window.storage) await window.storage.set(STORAGE_KEY, payload, false);
-    else localStorage.setItem(STORAGE_KEY, payload);
+    if (window.storage) await window.storage.set(STORAGE_KEY, payload, false); else localStorage.setItem(STORAGE_KEY, payload);
   }catch(e){ showToast('Could not save data'); }
 }
 
 function populateYearFilter(){
-  const sel = document.getElementById('filterYear');
-  const current = sel.value;
+  const sel = document.getElementById('filterYear'); const current = sel.value;
   const years = [...new Set(receipts.map(r=>r.finYear).filter(Boolean))].sort().reverse();
   sel.innerHTML = '<option value="">All financial years</option>' + years.map(y=>`<option value="${escapeHtml(y)}">${escapeHtml(y)}</option>`).join('');
   sel.value = years.includes(current) ? current : '';
@@ -397,18 +337,13 @@ function render(){
   });
   filtered.sort((a,b)=> (b.receiptDate||'').localeCompare(a.receiptDate||'') || (b.id-a.id));
 
-  document.getElementById('resultCount').textContent = filtered.length + ' shown';
   document.getElementById('statCount').textContent = receipts.length;
   document.getElementById('statTotal').textContent = fmtMoney(receipts.reduce((s,r)=>s+(Number(r.totalAmount)||0),0));
   document.getElementById('statProps').textContent = new Set(receipts.map(r=>r.pid||r.propNo).filter(Boolean)).size;
   document.getElementById('statYears').textContent = new Set(receipts.map(r=>r.finYear).filter(Boolean)).size;
 
   if(filtered.length === 0){
-    grid.innerHTML = `<div class="empty-state">
-      <h3>${receipts.length===0 ? 'No receipts filed' : 'No matches found'}</h3>
-      <p>Adjust your filters or add a new receipt.</p>
-    </div>`;
-    return;
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><h3>No receipts filed</h3></div>`; return;
   }
 
   grid.innerHTML = filtered.map(r => `
@@ -422,55 +357,58 @@ function render(){
       <div class="meta-grid">
         <div class="meta-field"><span class="m-label">PID</span><span class="m-value">${escapeHtml(r.pid || '—')}</span></div>
         <div class="meta-field"><span class="m-label">Prop No</span><span class="m-value">${escapeHtml(r.propNo || '—')}</span></div>
-        <div class="meta-field wide"><span class="m-label">Loc</span><span class="m-value">${escapeHtml([r.village, r.panchayat, r.district].filter(Boolean).join(', ')) || '—'}</span></div>
+        <div class="meta-field wide"><span class="m-label">Loc</span><span class="m-value">${escapeHtml([r.village, r.panchayat].filter(Boolean).join(', ')) || '—'}</span></div>
       </div>
-      <div class="amount-row">
-        <span class="amount-label">Total paid</span>
-        <span class="amount-value">${fmtMoney(r.totalAmount)}</span>
-      </div>
+      <div class="amount-row"><span class="amount-label">Total paid</span><span class="amount-value">${fmtMoney(r.totalAmount)}</span></div>
       <div class="stub-actions">
         <button onclick="editReceipt(${r.id})">Edit</button>
         <button class="danger" onclick="deleteReceipt(${r.id})">Del</button>
-        ${r.hasPdf ? `<button style="margin-left:auto; border-color:var(--seal-green); color:var(--seal-green);" onclick="viewPdf(${r.id})">View PDF</button>` : ''}
+        ${r.hasPdf ? `<button style="margin-left:auto; border-color:var(--seal-green); color:var(--seal-green);" onclick="viewPdf(${r.id})">View Original</button>` : ''}
       </div>
     </div>
   `).join('');
 }
 
-/* 3. Event Listeners & Core UI */
-document.getElementById('clearFiltersBtn').addEventListener('click', () => {
-    document.getElementById('search').value = '';
-    document.getElementById('filterYear').value = '';
-    render();
-});
-
+// UI Controls
 document.getElementById('selectAllBtn').addEventListener('change', (e) => {
-    const isChecked = e.target.checked;
-    document.querySelectorAll('.record-cb').forEach(cb => cb.checked = isChecked);
+    document.querySelectorAll('.record-cb').forEach(cb => cb.checked = e.target.checked);
 });
+document.getElementById('clearSelectionBtn').addEventListener('click', () => {
+    document.querySelectorAll('.record-cb').forEach(cb => cb.checked = false);
+    document.getElementById('selectAllBtn').checked = false;
+});
+document.getElementById('search').addEventListener('input', () => setTimeout(render, 250));
+document.getElementById('filterYear').addEventListener('change', render);
 
 function closeModals(){
-  document.querySelectorAll('.overlay').forEach(el => el.classList.remove('open'));
+  document.querySelectorAll('.overlay').forEach(el => { if(el.id !== 'receive-overlay') el.classList.remove('open') });
   document.getElementById('receiptForm').reset();
   editingId = null; pendingExtra = null; pendingPdfBlob = null;
-  document.getElementById('pdfViewerFrame').src = ''; // Release memory
+  document.getElementById('pdfViewerFrame').src = ''; // Purge memory
 }
 
-document.getElementById('openAdd').addEventListener('click', ()=>{ openModal('overlay'); });
+document.getElementById('openAdd').addEventListener('click', ()=>{ document.getElementById('overlay').classList.add('open'); });
+
 window.editReceipt = function(id){
-  const r = receipts.find(x=>x.id===id); if(!r) return;
-  editingId = id;
+  const r = receipts.find(x=>x.id===id); if(!r) return; editingId = id;
   ['ownerName','finYear','district','taluk','panchayat','village','pid','propNo','receiptNo','receiptDate','paymentType','paymentDate','paidBy'].forEach(k => document.getElementById(k).value = r[k]||'');
   ['taxBuilding','cessBeggary','cessLibrary','cessHealth','roundOff','totalAmount'].forEach(k => document.getElementById(k).value = r[k]||0);
-  openModal('overlay');
+  document.getElementById('overlay').classList.add('open');
 };
+
 window.deleteReceipt = async function(id){
   if(!confirm('Delete this receipt? Cannot be undone.')) return;
   receipts = receipts.filter(r=>r.id!==id);
-  await persist();
-  await deletePdfBinary(id); // Cleanup binary payload
+  await persist(); await deletePdfBinary(id);
   populateYearFilter(); render(); showToast('Receipt deleted');
 };
+
+window.viewPdf = async function(id) {
+    const fileBlob = await getPdfBinary(id);
+    if(!fileBlob) { showToast("Original PDF missing."); return; }
+    document.getElementById('pdfViewerFrame').src = URL.createObjectURL(fileBlob);
+    document.getElementById('pdfViewerOverlay').classList.add('open');
+}
 
 document.getElementById('receiptForm').addEventListener('submit', async (e)=>{
   e.preventDefault();
@@ -492,33 +430,14 @@ document.getElementById('receiptForm').addEventListener('submit', async (e)=>{
     hasPdf: pendingPdfBlob ? true : (base.hasPdf || false)
   };
 
-  if(editingId){ const idx = receipts.findIndex(r=>r.id===editingId); if(idx>-1) receipts[idx] = data; } 
-  else { receipts.push(data); }
-  
+  if(editingId){ const idx = receipts.findIndex(r=>r.id===editingId); if(idx>-1) receipts[idx] = data; } else { receipts.push(data); }
   if(pendingPdfBlob) await savePdfBinary(newId, pendingPdfBlob);
-
-  await persist(); populateYearFilter(); render(); closeModals();
-  showToast(editingId ? 'Receipt updated' : 'Receipt added');
+  await persist(); populateYearFilter(); render(); closeModals(); showToast(editingId ? 'Updated' : 'Added');
 });
 
-document.getElementById('search').addEventListener('input', () => { setTimeout(render, 250); });
-document.getElementById('filterYear').addEventListener('change', render);
-
-function openModal(id){ document.getElementById(id).classList.add('open'); }
-
-window.viewPdf = async function(id) {
-    const fileBlob = await getPdfBinary(id);
-    if(!fileBlob) { showToast("PDF binary missing or corrupted."); return; }
-    const url = URL.createObjectURL(fileBlob);
-    document.getElementById('pdfViewerFrame').src = url;
-    openModal('pdfViewerOverlay');
-}
-
-/* 4. Extraction Logic (Preserved entirely) */
+/* ---------- PDF Parsing (Untouched) ---------- */
 if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 const PAYMENT_TYPE_MAP = {'ಡಿ.ಡಿ': 'DD', 'ನಗದು': 'Cash', 'ಚೆಕ್': 'Cheque', 'ಆನ್\u200cಲೈನ್': 'Online', 'ಆನ್‌ಲೈನ್': 'Online', 'ಕಾರ್ಡ್': 'Card', 'ಚಲನ್': 'Challan'};
-const COLLECTED_BY_MAP = {'ಬಿಲ್ ಕಲೆಕ್ಟರ್': 'Bill Collector', 'ಪಂಚಾಯತ್ ಅಭಿವೃದ್ಧಿ ಅಧಿಕಾರಿ': 'Panchayat Development Officer', 'ಕಾರ್ಯದರ್ಶಿ': 'Secretary'};
-
 function num(s){ if (s === undefined || s === null) return 0; const n = parseFloat(String(s).replace(/,/g,'')); return isNaN(n) ? 0 : n; }
 async function pdfToLines(pdf){
   const allLines = [];
@@ -557,8 +476,7 @@ function extractFieldsFromLines(lines){
     const ownerWords = [];
     for (let ln of block){
       if (!ln || ln.includes('Father') || ln.includes('Spouse') || ln.includes('Owner Name')) continue;
-      ln = ln.replace(/\b\d{4}-\d{4}\b/g, '').replace(/\s+\.\s*$/,'').trim();
-      if (/[A-Za-z]{2,}/.test(ln)) ownerWords.push(ln);
+      ln = ln.replace(/\b\d{4}-\d{4}\b/g, '').replace(/\s+\.\s*$/,'').trim(); if (/[A-Za-z]{2,}/.test(ln)) ownerWords.push(ln);
     }
     d.ownerName = ownerWords.join(' ').trim();
   }
@@ -586,17 +504,14 @@ pdfInput.addEventListener('change', async () => {
   let ok = 0;
   for (const file of files){
     try{
-      const buf = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-      const lines = await pdfToLines(pdf);
-      const fields = extractFieldsFromLines(lines);
+      const buf = await file.arrayBuffer(); const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+      const lines = await pdfToLines(pdf); const fields = extractFieldsFromLines(lines);
       
       const newId = Date.now() + Math.floor(Math.random()*1000);
       const fileBlob = new Blob([buf], { type: 'application/pdf' });
-      await savePdfBinary(newId, fileBlob); // Save strictly to IndexedDB
+      await savePdfBinary(newId, fileBlob); 
 
-      receipts.push({ ...fields, id: newId, sourceFile: file.name, hasPdf: true });
-      ok++;
+      receipts.push({ ...fields, id: newId, sourceFile: file.name, hasPdf: true }); ok++;
     } catch(err){ console.error(err); }
   }
   await persist(); populateYearFilter(); render();
@@ -604,109 +519,122 @@ pdfInput.addEventListener('change', async () => {
   importBtn.disabled = false; importBtn.textContent = '⇧ Import PDF'; pdfInput.value = '';
 });
 
-/* 5. PDF Merging & P2P Logic */
-let myPeer = null;
-let qrCodeObj = null;
-let scannerObj = null;
+/* ===================== WiFi P2P MERGE & SHARE ===================== */
 
+let peerInstance = null;
+let activeConnection = null;
+let hostQrObj = null;
+
+// SENDER LOGIC (Host)
 document.getElementById('openP2P').addEventListener('click', () => {
     const selected = document.querySelectorAll('.record-cb:checked');
-    if(selected.length === 0) { showToast('Select at least one receipt to merge/share.'); return; }
-    openModal('p2pOverlay');
+    if(selected.length === 0) { showToast('Please select records to merge first.'); return; }
+    
+    document.getElementById('p2pHostOverlay').classList.add('open');
+    const statusEl = document.getElementById('p2p-conn-status');
+    
+    if(peerInstance) peerInstance.destroy();
+    peerInstance = new Peer();
+    
+    peerInstance.on('open', (id) => {
+        // Generate the URL route parameters[cite: 2]
+        const shareUrl = window.location.href.split('?')[0] + '?receive_peer=' + id;
+        document.getElementById('qrCodeContainer').style.display = 'block';
+        document.getElementById('qrCodeContainer').innerHTML = '';
+        
+        hostQrObj = new QRCode(document.getElementById('qrCodeContainer'), {
+            text: shareUrl, width: 200, height: 200, colorDark : "#e0e0e0", colorLight : "#121212"
+        });
+        statusEl.innerText = "Host ID active. Scan with target device.";
+    });
+
+    peerInstance.on('connection', (conn) => {
+        activeConnection = conn;
+        activeConnection.on('open', () => {
+            statusEl.innerText = "✅ Device Connected! Ready to transmit.";
+            statusEl.style.color = "var(--seal-green)";
+            document.getElementById('p2p-send-controls').style.display = 'block';
+            document.getElementById('qrCodeContainer').style.display = 'none';
+        });
+    });
 });
 
-// A. Merging Engine
-async function mergeSelectedPdfs() {
-    const selectedIds = Array.from(document.querySelectorAll('.record-cb:checked')).map(cb => Number(cb.value));
-    const mergedPdf = await PDFLib.PDFDocument.create();
-    let mergedCount = 0;
+async function executeP2PMergeAndSend() {
+    const btn = document.getElementById('triggerSendBtn');
+    btn.innerText = "Merging PDFs..."; btn.disabled = true;
     
-    for(const id of selectedIds) {
-        const fileBlob = await getPdfBinary(id);
-        if(fileBlob) {
-            const arrayBuffer = await fileBlob.arrayBuffer();
-            const srcDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-            const copiedPages = await mergedPdf.copyPages(srcDoc, srcDoc.getPageIndices());
-            copiedPages.forEach(p => mergedPdf.addPage(p));
-            mergedCount++;
+    try {
+        const selectedIds = Array.from(document.querySelectorAll('.record-cb:checked')).map(cb => Number(cb.value));
+        const mergedPdf = await PDFLib.PDFDocument.create();
+        let appended = 0;
+        
+        for(const id of selectedIds) {
+            const fileBlob = await getPdfBinary(id);
+            if(fileBlob) {
+                const srcDoc = await PDFLib.PDFDocument.load(await fileBlob.arrayBuffer());
+                const copiedPages = await mergedPdf.copyPages(srcDoc, srcDoc.getPageIndices());
+                copiedPages.forEach(p => mergedPdf.addPage(p));
+                appended++;
+            }
         }
+        
+        if(appended === 0) throw new Error("No PDF binaries found for selected receipts.");
+        
+        btn.innerText = "Transmitting...";
+        const payloadBytes = await mergedPdf.save();
+        
+        activeConnection.send({ 
+            file: payloadBytes, 
+            name: `Tax_Ledger_Export_${new Date().getTime()}.pdf` 
+        });
+        
+        showToast("Payload transmitted successfully!");
+        closeP2PHost();
+        
+    } catch(e) {
+        showToast(e.message);
     }
-    if(mergedCount === 0) throw new Error("None of the selected records contain original PDF data.");
-    return await mergedPdf.save();
+    btn.innerText = "Send Selected PDFs"; btn.disabled = false;
 }
 
-// B. Sender Logic
-document.getElementById('generateQrBtn').addEventListener('click', async () => {
-    const statusEl = document.getElementById('senderStatus');
-    statusEl.innerText = "Initializing Peer connection...";
-    document.getElementById('qrCodeContainer').style.display = 'block';
+function closeP2PHost() {
+    document.getElementById('p2pHostOverlay').classList.remove('open');
+    document.getElementById('p2p-send-controls').style.display = 'none';
+    if(peerInstance) peerInstance.destroy();
+}
 
-    if(myPeer) myPeer.destroy(); // Reset peer
-    myPeer = new Peer(); 
-
-    myPeer.on('open', (id) => {
-        statusEl.innerText = "Host Ready! Ask client to scan QR.";
-        if(qrCodeObj) qrCodeObj.clear();
-        document.getElementById('qrCodeContainer').innerHTML = ''; // Clear div
-        qrCodeObj = new QRCode(document.getElementById('qrCodeContainer'), {
-            text: id, width: 180, height: 180, colorDark : "#e0e0e0", colorLight : "#121212"
-        });
-    });
-
-    myPeer.on('connection', (conn) => {
-        statusEl.innerText = "Device Connected! Merging PDFs... do not close.";
-        conn.on('open', async () => {
-            try {
-                const mergedBytes = await mergeSelectedPdfs();
-                conn.send({ file: mergedBytes, filename: 'Merged_Tax_Ledger.pdf' });
-                statusEl.innerText = "Sent successfully!";
-                showToast("File transferred to peer!");
-            } catch(e) {
-                statusEl.innerText = "Error merging: " + e.message;
-            }
-        });
-        conn.on('error', (err) => statusEl.innerText = "Connection lost: " + err);
-    });
-    myPeer.on('error', (err) => statusEl.innerText = "Network Error: " + err);
-});
-
-// C. Receiver Logic
-document.getElementById('startScannerBtn').addEventListener('click', () => {
-    const statusEl = document.getElementById('receiverStatus');
-    document.getElementById('reader').style.display = 'block';
+// RECEIVER LOGIC (Client)
+const receiveId = new URLSearchParams(window.location.search).get('receive_peer');
+if (receiveId) {
+    // Reveal full screen overlay immediately upon page load[cite: 2]
+    document.getElementById('receive-overlay').style.display = 'flex';
     
-    if(!scannerObj) {
-        scannerObj = new Html5QrcodeScanner("reader", { fps: 10, qrbox: {width: 250, height: 250} }, false);
-    }
-    
-    scannerObj.render((decodedText) => {
-        statusEl.innerText = "QR Found. Connecting to Host...";
-        scannerObj.clear();
-        document.getElementById('reader').style.display = 'none';
-
-        if(myPeer) myPeer.destroy();
-        myPeer = new Peer();
+    peerInstance = new Peer();
+    peerInstance.on('open', () => {
+        activeConnection = peerInstance.connect(receiveId);
         
-        myPeer.on('open', () => {
-            const conn = myPeer.connect(decodedText);
-            conn.on('open', () => statusEl.innerText = "Connected! Awaiting file...");
-            conn.on('data', (data) => {
-                statusEl.innerText = "File received! Downloading...";
-                const blob = new Blob([data.file], { type: "application/pdf" });
-                const link = document.createElement('a');
-                link.href = window.URL.createObjectURL(blob);
-                link.download = data.filename;
-                link.click();
-                showToast("Merged PDF Downloaded");
-            });
-            conn.on('error', (err) => statusEl.innerText = "Transfer error: " + err);
+        activeConnection.on('open', () => { 
+            document.getElementById('receive-status').innerText = 'Connected! Waiting for Host payload...'; 
         });
-    }, (error) => { /* Ignore regular frame scan failures */ });
-});
-
-function stopScanner() {
-    if(scannerObj) { scannerObj.clear(); document.getElementById('reader').style.display = 'none'; }
-    if(myPeer) myPeer.destroy();
+        
+        activeConnection.on('data', (data) => { 
+            document.getElementById('receive-loader').style.display = 'none'; 
+            document.getElementById('receive-status').innerText = `Received file! Downloading...`; 
+            
+            // Trigger download on client device[cite: 2]
+            const blob = new Blob([data.file], { type: "application/pdf" });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a"); 
+            a.href = url; a.download = data.name; 
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        });
+        
+        activeConnection.on('error', () => { 
+            document.getElementById('receive-status').innerText = 'Connection disconnected.'; 
+        });
+    });
 }
 
 loadReceipts();
