@@ -111,29 +111,29 @@
   .controls input[type=text]{flex:1;min-width:200px;}
   .controls .action-group { display: flex; gap: 8px; margin-left: auto; align-items: center; flex-wrap: wrap;}
 
-  /* Grid & Cards */
-  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:12px; width: 100%; margin-bottom: auto;}
+  /* Grid & Cards - Space Optimized */
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(290px, 1fr)); gap:12px; width: 100%; margin-bottom: auto;}
   .stub{
     background:var(--card); border:1px solid var(--line); border-radius:var(--border-radius);
-    padding:16px; display:flex;flex-direction:column;gap:10px; animation:rise .3s ease both;
+    padding:12px 14px; display:flex;flex-direction:column;gap:6px; animation:rise .3s ease both;
   }
   @keyframes rise{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
   
-  .stub-header-row{ display:flex;justify-content:space-between;align-items:center; gap: 10px; border-bottom: 1px solid var(--line); padding-bottom: 8px;}
+  .stub-header-row{ display:flex;justify-content:space-between;align-items:center; gap: 10px; border-bottom: 1px solid var(--line); padding-bottom: 6px;}
   .receipt-no{ font-family:'JetBrains Mono',monospace;font-size:11px; color:var(--muted); }
-  .fy-badge{ font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700; color: var(--card); background: var(--cyan); padding: 3px 6px; border-radius: 8px; }
+  .fy-badge{ font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700; color: var(--card); background: var(--cyan); padding: 2px 6px; border-radius: 8px; }
   
-  .owner{ font-weight:600;font-size:15px;line-height:1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .owner{ font-weight:600;font-size:14px;line-height:1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top:2px; }
   
-  .meta-grid{ display:grid;grid-template-columns:1fr 1fr; gap:8px 12px; padding:2px 0; }
-  .meta-field{display:flex;flex-direction:column;gap:2px;}
+  .meta-grid{ display:grid;grid-template-columns:1fr 1fr; gap:6px 10px; padding:2px 0; }
+  .meta-field{display:flex;flex-direction:column;gap:1px;}
   .meta-field .m-label{ font-family:'JetBrains Mono',monospace;font-size:8px;text-transform:uppercase; letter-spacing:.08em;color:var(--muted); }
-  .meta-field .m-value{ font-size:12px;color:var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .meta-field .m-value{ font-size:11.5px;color:var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .meta-field.wide{grid-column:1/-1;}
   
-  .amount-row{ display:flex;justify-content:space-between;align-items:flex-end; padding-top: 8px; border-top:1px dashed var(--line); }
+  .amount-row{ display:flex;justify-content:space-between;align-items:flex-end; padding-top: 6px; border-top:1px dashed var(--line); margin-top: 2px;}
   .amount-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);}
-  .amount-value{ font-family:'JetBrains Mono',monospace;font-weight:700;font-size:16px;color:var(--amber); }
+  .amount-value{ font-family:'JetBrains Mono',monospace;font-weight:700;font-size:15px;color:var(--amber); }
   
   .stub-actions{ display:flex;gap:6px; align-items: center; margin-top: 4px; flex-wrap: wrap;}
   .stub-actions button{
@@ -403,7 +403,7 @@ async function deletePdfBinary(id) {
 const grid = document.getElementById('grid');
 const toastEl = document.getElementById('toast');
 
-function showToast(msg){ toastEl.textContent = msg; toastEl.classList.add('show'); setTimeout(()=>toastEl.classList.remove('show'), 2200); }
+function showToast(msg){ toastEl.textContent = msg; toastEl.classList.add('show'); setTimeout(()=>toastEl.classList.remove('show'), 3500); }
 function fmtMoney(n){ return '₹' + (Number(n)||0).toLocaleString('en-IN', {maximumFractionDigits:2, minimumFractionDigits: n%1===0?0:2}); }
 function escapeHtml(str){ return String(str ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
@@ -613,8 +613,18 @@ window.clearAllData = async function() {
     populateYearFilter(); render(); showToast('All app data and cache cleared.');
 };
 
+/* MANUAL ADD - DUPLICATE NEGATIVE TESTING */
 document.getElementById('receiptForm').addEventListener('submit', async (e)=>{
   e.preventDefault();
+  const recNo = document.getElementById('receiptNo').value.trim();
+  
+  // Negative Test: Prevent saving if Receipt No already exists (and we aren't editing that specific one)
+  const isDuplicate = receipts.some(r => r.receiptNo === recNo && r.id !== editingId);
+  if(isDuplicate && recNo !== '') {
+      alert(`Error: A receipt with number ${recNo} already exists in the ledger.`);
+      return;
+  }
+
   const base = editingId ? (receipts.find(r=>r.id===editingId) || {}) : (pendingExtra || {});
   const newId = editingId ?? (Date.now() + Math.floor(Math.random() * 10000));
   
@@ -627,7 +637,7 @@ document.getElementById('receiptForm').addEventListener('submit', async (e)=>{
     district: document.getElementById('district').value.trim(), taluk: document.getElementById('taluk').value.trim(),
     panchayat: document.getElementById('panchayat').value.trim(), village: document.getElementById('village').value.trim(),
     pid: document.getElementById('pid').value.trim(), propNo: document.getElementById('propNo').value.trim(),
-    receiptNo: document.getElementById('receiptNo').value.trim(), receiptDate: document.getElementById('receiptDate').value.trim(),
+    receiptNo: recNo, receiptDate: document.getElementById('receiptDate').value.trim(),
     paymentType: document.getElementById('paymentType').value.trim(), paymentDate: document.getElementById('paymentDate').value.trim(),
     paidBy: document.getElementById('paidBy').value.trim(),
     taxBuilding: parseFloat(document.getElementById('taxBuilding').value)||0, cessBeggary: parseFloat(document.getElementById('cessBeggary').value)||0,
@@ -638,7 +648,7 @@ document.getElementById('receiptForm').addEventListener('submit', async (e)=>{
 
   if(editingId){ const idx = receipts.findIndex(r=>r.id===editingId); if(idx>-1) receipts[idx] = data; } else { receipts.push(data); }
   if(pendingPdfBlob) await savePdfBinary(newId, pendingPdfBlob);
-  await persist(); populateYearFilter(); render(); closeModals(); showToast(editingId ? 'Updated' : 'Added');
+  await persist(); populateYearFilter(); render(); closeModals(); showToast(editingId ? 'Updated successfully' : 'Added successfully');
 });
 
 /* ---------- PDF Parsing (Extracting from Total Demand Column) ---------- */
@@ -661,14 +671,11 @@ async function pdfToLines(pdf){
   return allLines.filter(l => l.length > 0);
 }
 
-// Multi-line lookahead to bypass invisible PDF table rendering issues
-// Specifically extracts the "Total Demand" column (typically the 3rd index)
 function amountRow(lines, labelRe) {
   for (let i = 0; i < lines.length; i++) {
     const m = lines[i].match(labelRe);
     if (m) { 
         let nums = [];
-        
         let lineRemainder = lines[i].slice(m.index + m[0].length);
         let matched = lineRemainder.match(/-?[\d,]+\.?\d*/g); 
         if (matched) nums.push(...matched);
@@ -684,8 +691,6 @@ function amountRow(lines, labelRe) {
         }
         
         if (nums.length > 0) {
-            // Index 2 is typically the "Total Demand" column.
-            // If less than 3 exist, it safely falls back to the last available number.
             let val = nums.length >= 3 ? nums[2] : nums[nums.length - 1];
             return num(val);
         }
@@ -722,7 +727,6 @@ function extractFieldsFromLines(lines){
   d.paymentType = ''; d.paymentDate = ''; d.paidBy = '';
   for (const line of lines){ const pm = line.match(/^(\S+)\s+(\d{1,2}-[A-Z]{3}-\d{4})\s*(.*)$/); if (pm){ d.paymentType = PAYMENT_TYPE_MAP[pm[1]] || pm[1]; d.paymentDate = pm[2]; d.paidBy = pm[3].trim(); break; } }
   
-  // Resilient Regex extraction for multi-line fallback (targeting Total Demand)
   d.taxBuilding = amountRow(lines, /Tax\s*on\s*Building/i);
   d.cessBeggary = amountRow(lines, /Beggary\s*Cess/i);
   d.cessLibrary = amountRow(lines, /Library\s*Cess/i);
@@ -737,16 +741,30 @@ const importBtn = document.getElementById('openImport');
 const pdfInput = document.getElementById('pdfInput');
 importBtn.addEventListener('click', () => pdfInput.click());
 
+/* PDF IMPORT - DUPLICATE NEGATIVE TESTING */
 pdfInput.addEventListener('change', async () => {
   const files = Array.from(pdfInput.files || []); if (!files.length) return;
   importBtn.disabled = true; importBtn.textContent = `Processing...`;
 
   let ok = 0;
+  let skipped = 0;
+  
   for (const file of files){
     try{
       const buf = await file.arrayBuffer(); const bufForParsing = buf.slice(0);
       const pdf = await pdfjsLib.getDocument({ data: bufForParsing }).promise;
       const lines = await pdfToLines(pdf); const fields = extractFieldsFromLines(lines);
+      
+      // Negative Test: Prevent Duplicate Entry via Batch Upload
+      const isDuplicate = receipts.some(r => 
+          (fields.receiptNo && r.receiptNo === fields.receiptNo) || 
+          (r.sourceFile === file.name && r.totalAmount === fields.totalAmount)
+      );
+      
+      if(isDuplicate) {
+          skipped++;
+          continue; // Skip adding to database
+      }
       
       const newId = Date.now() + Math.floor(Math.random()*1000);
       const fileBlob = new Blob([buf], { type: 'application/pdf' });
@@ -755,8 +773,13 @@ pdfInput.addEventListener('change', async () => {
       receipts.push({ ...fields, id: newId, sourceFile: file.name, hasPdf: true }); ok++;
     } catch(err){ console.error(err); }
   }
+  
   await persist(); populateYearFilter(); render();
-  showToast(`Imported ${ok} receipt(s) securely.`);
+  
+  let resultMessage = `Imported ${ok} receipt(s).`;
+  if (skipped > 0) resultMessage += ` Skipped ${skipped} duplicate(s).`;
+  
+  showToast(resultMessage);
   importBtn.disabled = false; importBtn.textContent = '⇧ Import PDF'; pdfInput.value = '';
 });
 
