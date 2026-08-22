@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Property Tax Ledger</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <!-- Core Extraction -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" integrity="sha512-q+4liFwdPC/bNdhUpZx6aXDx/h77yEQtn4I1slHydcbZK34nLaR3cAeYSJshoxIOq3mjEf7xJE8YWIUHMn+oCQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -17,22 +17,22 @@
 
 <style>
   :root{
-    /* New Deep Slate Dashboard Palette */
-    --paper: #0b111a;        /* Main App Background */
-    --card: #151f2e;         /* Dashboard Panels & Cards */
-    --paper-2: #1a2536;      /* Hover states / secondary bg */
-    --line: #2a364f;         /* Borders and dividers */
+    /* Deep Slate Dashboard Palette */
+    --paper: #0b111a;        
+    --card: #151f2e;         
+    --paper-2: #1a2536;      
+    --line: #2a364f;         
     
-    --ink: #f1f5f9;          /* Primary Text (White/Light Slate) */
-    --muted: #829ab1;        /* Secondary Text */
+    --ink: #f1f5f9;          
+    --muted: #829ab1;        
     
-    --cyan: #00e5ff;         /* Primary Accent (Bars, Tags) */
+    --cyan: #00e5ff;         
     --cyan-dim: rgba(0, 229, 255, 0.15);
     
-    --amber: #ffc107;        /* Secondary Accent (Totals, Highlights) */
+    --amber: #ffc107;        
     --amber-dim: rgba(255, 193, 7, 0.15);
     
-    --danger: #ef4444;       /* Delete / Errors */
+    --danger: #ef4444;       
     
     --shadow: 0 8px 24px rgba(0,0,0,0.4);
     --border-radius: 10px;
@@ -41,7 +41,8 @@
   html,body{margin:0;padding:0;background:var(--paper); -webkit-tap-highlight-color: transparent;}
   body{
     font-family:'Inter',sans-serif; color:var(--ink);
-    min-height:100vh; padding:24px 16px 40px; display: flex; flex-direction: column;
+    background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+    background-size: 22px 22px; min-height:100vh; padding:24px 16px 40px; display: flex; flex-direction: column;
   }
   .wrap{max-width:1340px;margin:0 auto; flex: 1; width: 100%; display: flex; flex-direction: column;}
 
@@ -50,7 +51,8 @@
     display:flex;justify-content:space-between;align-items:flex-end;
     border-bottom:1px solid var(--line); padding-bottom:18px;margin-bottom:22px; gap:16px;flex-wrap:wrap;
   }
-  h1{ font-weight:700; font-size:clamp(20px,4vw,28px); margin:0; letter-spacing:-0.02em; color: var(--ink); }
+  .brand-eyebrow{ font-family:'JetBrains Mono',monospace; font-size:11px;letter-spacing:.18em;text-transform:uppercase; color:var(--cyan);font-weight:600;margin-bottom:6px; }
+  h1{ font-family:'Fraunces',serif; font-weight:600; font-size:clamp(20px,4vw,28px); margin:0; letter-spacing:-0.02em; color: var(--ink); }
   .subtitle{font-size:13px;color:var(--muted);margin-top:6px;max-width:520px; line-height: 1.4;}
   
   .btn{
@@ -65,9 +67,7 @@
   .btn-secondary:hover{ background:var(--paper-2); border-color:var(--muted); }
 
   /* ---------------- Dashboard Layout ---------------- */
-  .dashboard {
-      display: grid; grid-template-columns: 1.8fr 1fr; gap: 20px; margin-bottom: 24px;
-  }
+  .dashboard { display: grid; grid-template-columns: 1.8fr 1fr; gap: 20px; margin-bottom: 24px; }
   .dash-panel {
       background: var(--card); border: 1px solid var(--line); border-radius: var(--border-radius);
       padding: 20px; display: flex; flex-direction: column;
@@ -121,7 +121,7 @@
   
   .stub-header-row{ display:flex;justify-content:space-between;align-items:center; gap: 10px; border-bottom: 1px solid var(--line); padding-bottom: 12px;}
   .receipt-no{ font-family:'JetBrains Mono',monospace;font-size:12px; color:var(--muted); }
-  .fy-badge{ font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700; color:var(--amber); background: var(--amber-dim); padding: 4px 8px; border-radius: 12px; }
+  .fy-badge{ font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700; color: var(--card); background: var(--cyan); padding: 4px 8px; border-radius: 12px; }
   
   .owner{ font-weight:600;font-size:16px;line-height:1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   
@@ -133,7 +133,7 @@
   
   .amount-row{ display:flex;justify-content:space-between;align-items:flex-end; padding-top: 12px; border-top:1px dashed var(--line); }
   .amount-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);}
-  .amount-value{ font-family:'JetBrains Mono',monospace;font-weight:700;font-size:18px;color:var(--cyan); }
+  .amount-value{ font-family:'JetBrains Mono',monospace;font-weight:700;font-size:18px;color:var(--amber); }
   
   .stub-actions{ display:flex;gap:8px; align-items: center; margin-top: 8px; flex-wrap: wrap;}
   .stub-actions button{
@@ -174,7 +174,7 @@
   .pdf-modal .pdf-container { flex: 1; width: 100%; background: #2a2a2a; position: relative; overflow: hidden; }
   
   .modal-header { margin-bottom: 16px; flex-shrink: 0; }
-  .modal h2{ font-weight:600;font-size:20px;margin:0 0 4px; color:var(--ink); }
+  .modal h2{ font-weight:600;font-size:20px;margin:0 0 4px; color:var(--ink); font-family: 'Fraunces', serif; }
   .modal .modal-sub{font-size:12px;color:var(--muted);}
   
   .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;}
@@ -229,7 +229,7 @@
     </div>
   </header>
 
-  <!-- New Deep Slate Dashboard -->
+  <!-- Deep Slate Dashboard -->
   <div class="dashboard">
       <div class="dash-panel">
           <div class="dash-title">Payment Trend</div>
@@ -459,17 +459,25 @@ function renderDashboard(filtered) {
         }).join('');
     }
 
-    // Render Breakup
+    // Render Breakup With Uncategorized Auto-Correction Fallback
     const brkEl = document.getElementById('breakupContainer');
     if(tPaid === 0) {
          brkEl.innerHTML = '<div style="color:var(--muted); font-size:12px; margin-top:20px;">No data available</div>';
     } else {
+        const tKnown = tBuild + tBeg + tLib + tHealth;
+        const tOther = Math.max(0, tPaid - tKnown);
+        
         const items = [
             { label: 'Tax on Building', val: tBuild, color: 'var(--amber)' },
             { label: 'Beggary Cess', val: tBeg, color: 'var(--cyan)' },
             { label: 'Library Cess', val: tLib, color: 'var(--muted)' },
             { label: 'Health Cess', val: tHealth, color: 'var(--ink)' }
         ];
+        
+        // Dynamically add 'Other/Arrears' if math doesn't sum up perfectly
+        if (tOther > 0.01) {
+            items.push({ label: 'Other Charges / Arrears', val: tOther, color: 'var(--danger)' });
+        }
         
         brkEl.innerHTML = items.map(item => {
             const pct = (item.val / tPaid) * 100;
@@ -499,7 +507,6 @@ function render(){
 
   document.getElementById('footerRecordCount').textContent = `${receipts.length} records saved`;
   
-  // Update New Dashboard
   renderDashboard(filtered);
 
   if(filtered.length === 0){
@@ -581,8 +588,6 @@ window.closePdfViewer = function() {
     if(currentActiveBlobUrl) { URL.revokeObjectURL(currentActiveBlobUrl); currentActiveBlobUrl = null; }
 }
 
-/* ------------------------------------------------------------ */
-
 document.getElementById('openAdd').addEventListener('click', ()=>{ document.getElementById('overlay').classList.add('open'); });
 
 window.editReceipt = function(id){
@@ -599,7 +604,6 @@ window.deleteReceipt = async function(id){
   populateYearFilter(); render(); showToast('Receipt deleted');
 };
 
-/* Clear Cache / Reset Functionality */
 window.clearAllData = async function() {
     if(!confirm('Are you absolutely sure you want to delete ALL receipts and PDF files? This action cannot be undone.')) return;
     receipts = []; await persist();
@@ -607,7 +611,6 @@ window.clearAllData = async function() {
     populateYearFilter(); render(); showToast('All app data and cache cleared.');
 };
 
-/* Manual Form Submission */
 document.getElementById('receiptForm').addEventListener('submit', async (e)=>{
   e.preventDefault();
   const base = editingId ? (receipts.find(r=>r.id===editingId) || {}) : (pendingExtra || {});
@@ -636,10 +639,11 @@ document.getElementById('receiptForm').addEventListener('submit', async (e)=>{
   await persist(); populateYearFilter(); render(); closeModals(); showToast(editingId ? 'Updated' : 'Added');
 });
 
-/* ---------- PDF Parsing  ---------- */
+/* ---------- PDF Parsing (Lenient Engine Update) ---------- */
 if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 const PAYMENT_TYPE_MAP = {'ಡಿ.ಡಿ': 'DD', 'ನಗದು': 'Cash', 'ಚೆಕ್': 'Cheque', 'ಆನ್\u200cಲೈನ್': 'Online', 'ಆನ್‌ಲೈನ್': 'Online', 'ಕಾರ್ಡ್': 'Card', 'ಚಲನ್': 'Challan'};
 function num(s){ if (s === undefined || s === null) return 0; const n = parseFloat(String(s).replace(/,/g,'')); return isNaN(n) ? 0 : n; }
+
 async function pdfToLines(pdf){
   const allLines = [];
   for (let p = 1; p <= pdf.numPages; p++){
@@ -654,20 +658,32 @@ async function pdfToLines(pdf){
   }
   return allLines.filter(l => l.length > 0);
 }
+
+// Updated amountRow logic: no longer strictly requires 2 numbers on a line
 function amountRow(lines, labelRe){
   for (const line of lines){
     const m = line.match(labelRe);
-    if (m){ const nums = line.slice(m.index + m[0].length).trim().match(/-?[\d,]+\.?\d*/g); if (nums && nums.length >= 2) return { arrears: num(nums[0]), current: num(nums[1]), total: num(nums[nums.length-1]) }; }
+    if (m){ 
+        const nums = line.slice(m.index + m[0].length).trim().match(/-?[\d,]+\.?\d*/g); 
+        if (nums && nums.length > 0) {
+            let currentVal = nums.length >= 2 ? nums[1] : nums[0];
+            return { current: num(currentVal), total: num(nums[nums.length-1]) }; 
+        }
+    }
   }
   return null;
 }
+
 function extractFieldsFromLines(lines){
   const text = lines.join('\n'); const warnings = []; const d = {};
+  
   let m = text.match(/\(([A-Z][A-Z .]*?)\s+Gram Panchayat\s*\)/); d.panchayat = m ? m[1].trim().replace(/\w\S*/g, t => t[0]+t.slice(1).toLowerCase()) : '';
   m = text.match(/([A-Z][A-Z .]*?)\s+Taluk\s*,\s*([A-Z][A-Z .]*?)\s+District/); if (m){ d.taluk = m[1].trim().replace(/\w\S*/g, t => t[0]+t.slice(1).toLowerCase()); d.district = m[2].trim().replace(/\w\S*/g, t => t[0]+t.slice(1).toLowerCase()); } 
   d.village = '';
+  
   m = text.match(/\b(\d{15,20})\b/); d.pid = m ? m[1] : ''; d.propNo = '';
   if (m){ const line = lines.find(l => l.includes(m[1])); if (line) d.propNo = line.slice(line.indexOf(m[1]) + m[1].length).trim(); }
+  
   const ownerIdx = lines.findIndex(l => l.includes('Owner Name')); const serviceIdx = lines.findIndex(l => l.includes('Service Name'));
   d.ownerName = ''; d.finYear = '';
   if (ownerIdx > -1 && serviceIdx > ownerIdx){
@@ -680,16 +696,20 @@ function extractFieldsFromLines(lines){
     }
     d.ownerName = ownerWords.join(' ').trim();
   }
+  
   m = text.match(/\b(\d{4,6}\/\d{6,}\/\d{2}-\d{2})\b/); d.receiptNo = m ? m[1] : '';
   m = text.match(/\b(\d{1,2}-[A-Za-z]{3}-\d{4})\b/); d.receiptDate = m ? m[1] : '';
   d.paymentType = ''; d.paymentDate = ''; d.paidBy = '';
   for (const line of lines){ const pm = line.match(/^(\S+)\s+(\d{1,2}-[A-Z]{3}-\d{4})\s*(.*)$/); if (pm){ d.paymentType = PAYMENT_TYPE_MAP[pm[1]] || pm[1]; d.paymentDate = pm[2]; d.paidBy = pm[3].trim(); break; } }
-  let row = amountRow(lines, /\/Tax on Building/); d.taxBuilding = row ? row.current : 0;
-  row = amountRow(lines, /\/Beggary Cess \(\d+%\)/); d.cessBeggary = row ? row.current : 0;
-  row = amountRow(lines, /\/Library Cess \(\d+%\)/); d.cessLibrary = row ? row.current : 0;
-  row = amountRow(lines, /\/Health Cess \(\d+%\)/); d.cessHealth = row ? row.current : 0;
-  row = amountRow(lines, /\/Round off/); d.roundOff = row ? row.total : 0;
-  m = text.match(/Total payment amount\s+(-?[\d,]+\.?\d*)/); d.totalAmount = m ? num(m[1]) : 0;
+  
+  // Highly lenient RegEx to grab items regardless of exact formatting quirks
+  let row = amountRow(lines, /Tax on Building/i); d.taxBuilding = row ? row.current : 0;
+  row = amountRow(lines, /Beggary Cess/i); d.cessBeggary = row ? row.current : 0;
+  row = amountRow(lines, /Library Cess/i); d.cessLibrary = row ? row.current : 0;
+  row = amountRow(lines, /Health Cess/i); d.cessHealth = row ? row.current : 0;
+  row = amountRow(lines, /Round off/i); d.roundOff = row ? row.total : 0;
+  
+  m = text.match(/Total payment amount\s+(-?[\d,]+\.?\d*)/i); d.totalAmount = m ? num(m[1]) : 0;
   return d;
 }
 
