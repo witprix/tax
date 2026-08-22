@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Property Tax Ledger</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <!-- Core Extraction -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" integrity="sha512-q+4liFwdPC/bNdhUpZx6aXDx/h77yEQtn4I1slHydcbZK34nLaR3cAeYSJshoxIOq3mjEf7xJE8YWIUHMn+oCQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -17,92 +17,135 @@
 
 <style>
   :root{
-    --ink: #e0e0e0; --paper: #121212; --paper-2: #1e1e1e;
-    --stamp: #bb86fc; --stamp-dark: #9965f4; --seal-green: #03dac6;
-    --gold: #cf6679; --muted: #888888; --line: #2c2c2c; --card: #1a1a1a;
-    --shadow: 0 8px 24px rgba(0,0,0,0.6);
+    /* New Deep Slate Dashboard Palette */
+    --paper: #0b111a;        /* Main App Background */
+    --card: #151f2e;         /* Dashboard Panels & Cards */
+    --paper-2: #1a2536;      /* Hover states / secondary bg */
+    --line: #2a364f;         /* Borders and dividers */
+    
+    --ink: #f1f5f9;          /* Primary Text (White/Light Slate) */
+    --muted: #829ab1;        /* Secondary Text */
+    
+    --cyan: #00e5ff;         /* Primary Accent (Bars, Tags) */
+    --cyan-dim: rgba(0, 229, 255, 0.15);
+    
+    --amber: #ffc107;        /* Secondary Accent (Totals, Highlights) */
+    --amber-dim: rgba(255, 193, 7, 0.15);
+    
+    --danger: #ef4444;       /* Delete / Errors */
+    
+    --shadow: 0 8px 24px rgba(0,0,0,0.4);
+    --border-radius: 10px;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;background:var(--paper); -webkit-tap-highlight-color: transparent;}
   body{
     font-family:'Inter',sans-serif; color:var(--ink);
-    background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
-    background-size: 22px 22px; min-height:100vh; padding:24px 16px 40px;
-    display: flex; flex-direction: column;
+    min-height:100vh; padding:24px 16px 40px; display: flex; flex-direction: column;
   }
   .wrap{max-width:1340px;margin:0 auto; flex: 1; width: 100%; display: flex; flex-direction: column;}
 
+  /* Header */
   header{
     display:flex;justify-content:space-between;align-items:flex-end;
-    border-bottom:2px solid var(--line); padding-bottom:18px;margin-bottom:22px; gap:16px;flex-wrap:wrap;
+    border-bottom:1px solid var(--line); padding-bottom:18px;margin-bottom:22px; gap:16px;flex-wrap:wrap;
   }
-  .brand-eyebrow{ font-family:'JetBrains Mono',monospace; font-size:11px;letter-spacing:.18em;text-transform:uppercase; color:var(--stamp);font-weight:600;margin-bottom:6px; }
-  h1{ font-family:'Fraunces',serif; font-weight:600; font-size:clamp(24px,4vw,36px); margin:0;letter-spacing:-0.01em; }
-  .subtitle{font-size:13px;color:var(--muted);margin-top:4px;max-width:520px; line-height: 1.4;}
+  h1{ font-weight:700; font-size:clamp(20px,4vw,28px); margin:0; letter-spacing:-0.02em; color: var(--ink); }
+  .subtitle{font-size:13px;color:var(--muted);margin-top:6px;max-width:520px; line-height: 1.4;}
   
-  .add-btn{
+  .btn{
     font-family:'Inter',sans-serif; font-weight:600;font-size:13px;
-    background:var(--ink);color:var(--paper); border:none;padding:10px 16px;border-radius:4px;
-    cursor:pointer;letter-spacing:.02em; transition:transform .15s ease, background .15s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    border:none;padding:10px 16px;border-radius:6px; cursor:pointer;
+    transition:all .15s ease; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   }
-  .add-btn:hover{background:var(--stamp);color:var(--paper); transform:translateY(-1px);}
-  .secondary-btn{background:var(--card);color:var(--ink);border:1px solid var(--line);}
-  .secondary-btn:hover{background:var(--line);color:var(--ink);}
+  .btn-primary{ background:var(--cyan); color:#000; box-shadow: 0 2px 8px rgba(0, 229, 255, 0.2); }
+  .btn-primary:hover{ background:#00cce6; transform:translateY(-1px); }
+  
+  .btn-secondary{ background:var(--card); color:var(--ink); border:1px solid var(--line); }
+  .btn-secondary:hover{ background:var(--paper-2); border-color:var(--muted); }
 
-  .summary{
-    display:grid;grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:1px;background:var(--line);
-    border:1px solid var(--line); margin-bottom:26px; border-radius: 4px; overflow: hidden;
+  /* ---------------- Dashboard Layout ---------------- */
+  .dashboard {
+      display: grid; grid-template-columns: 1.8fr 1fr; gap: 20px; margin-bottom: 24px;
   }
-  .summary .cell{ background:var(--card);padding:16px 18px; }
-  .summary .label{ font-family:'JetBrains Mono',monospace; font-size:10px;text-transform:uppercase; letter-spacing:.12em; color:var(--muted);margin-bottom:6px; }
-  .summary .value{ font-family:'Fraunces',serif;font-weight:600; font-size:24px; }
-  .summary .value.stamp-color{color:var(--stamp);}
+  .dash-panel {
+      background: var(--card); border: 1px solid var(--line); border-radius: var(--border-radius);
+      padding: 20px; display: flex; flex-direction: column;
+  }
+  .dash-title { font-size: 16px; font-weight: 600; margin: 0 0 4px 0; color: var(--ink); }
+  .dash-sub { font-size: 12px; color: var(--muted); margin: 0 0 20px 0; }
+  
+  /* Chart (Panel 1) */
+  .chart-area {
+      flex: 1; display: flex; align-items: flex-end; gap: 12px; height: 180px;
+      border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 10px;
+  }
+  .chart-bar-wrap { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; position: relative;}
+  .chart-bar { width: 100%; max-width: 40px; background: var(--cyan); border-radius: 4px 4px 0 0; min-height: 2px; transition: height 0.5s ease;}
+  .chart-label { font-size: 11px; color: var(--muted); margin-top: 8px; font-family: 'JetBrains Mono', monospace;}
+  .chart-tooltip {
+      position: absolute; top: -30px; background: var(--paper); border: 1px solid var(--line);
+      padding: 4px 8px; border-radius: 4px; font-size: 11px; font-family: 'JetBrains Mono', monospace;
+      color: var(--amber); opacity: 0; pointer-events: none; transition: opacity 0.2s; white-space: nowrap;
+  }
+  .chart-bar-wrap:hover .chart-tooltip { opacity: 1; }
 
+  /* Breakup (Panel 2) */
+  .breakup-item { margin-bottom: 16px; }
+  .b-header { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+  .b-header span:last-child { font-family: 'JetBrains Mono', monospace; font-weight: 600;}
+  .b-track { width: 100%; height: 6px; background: var(--paper); border-radius: 3px; overflow: hidden; }
+  .b-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+  .b-total { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .b-total span:last-child { font-family: 'JetBrains Mono', monospace; color: var(--amber); font-size: 16px;}
+  
+  @media(max-width: 860px){ .dashboard { grid-template-columns: 1fr; } }
+
+  /* Controls */
   .controls{ display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center; }
   .controls input[type=text], .controls select{
     font-family:'Inter',sans-serif;font-size:13px; background:var(--card);
-    border:1px solid var(--line); padding:10px 12px;border-radius:4px;color:var(--ink);
+    border:1px solid var(--line); padding:10px 12px;border-radius:6px;color:var(--ink); outline: none;
   }
+  .controls input[type=text]:focus, .controls select:focus { border-color: var(--cyan); }
   .controls input[type=text]{flex:1;min-width:200px;}
   .controls .action-group { display: flex; gap: 8px; margin-left: auto; align-items: center; flex-wrap: wrap;}
 
+  /* Grid & Cards */
   .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:16px; width: 100%; margin-bottom: auto;}
-  
   .stub{
-    background:var(--card); border:1px solid var(--line); border-radius:8px; position:relative;
-    padding:18px 20px; display:flex;flex-direction:column;gap:12px; animation:rise .35s ease both;
-    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    background:var(--card); border:1px solid var(--line); border-radius:var(--border-radius);
+    padding:20px; display:flex;flex-direction:column;gap:12px; animation:rise .3s ease both;
   }
-  .stub:hover { transform: translateY(-2px); border-color: var(--muted); box-shadow: var(--shadow); }
   @keyframes rise{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
   
   .stub-header-row{ display:flex;justify-content:space-between;align-items:center; gap: 10px; border-bottom: 1px solid var(--line); padding-bottom: 12px;}
-  .receipt-no{ font-family:'JetBrains Mono',monospace;font-size:12px; color:var(--stamp);font-weight:600; }
-  .fy-badge{ font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700; color:var(--seal-green);letter-spacing:.04em; background: rgba(3, 218, 198, 0.1); padding: 4px 8px; border-radius: 12px; }
+  .receipt-no{ font-family:'JetBrains Mono',monospace;font-size:12px; color:var(--muted); }
+  .fy-badge{ font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700; color:var(--amber); background: var(--amber-dim); padding: 4px 8px; border-radius: 12px; }
   
-  .owner{ font-family:'Fraunces',serif;font-weight:600;font-size:17px;line-height:1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 4px; }
+  .owner{ font-weight:600;font-size:16px;line-height:1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   
-  .meta-grid{ display:grid;grid-template-columns:1fr 1fr; gap:10px 16px; padding:8px 0; }
-  .meta-field{display:flex;flex-direction:column;gap:2px;}
+  .meta-grid{ display:grid;grid-template-columns:1fr 1fr; gap:12px 16px; padding:4px 0; }
+  .meta-field{display:flex;flex-direction:column;gap:4px;}
   .meta-field .m-label{ font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase; letter-spacing:.08em;color:var(--muted); }
-  .meta-field .m-value{ font-size:12px;color:var(--ink);line-height:1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .meta-field .m-value{ font-size:13px;color:var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .meta-field.wide{grid-column:1/-1;}
   
-  .amount-row{ display:flex;justify-content:space-between;align-items:flex-end; padding-top: 8px; border-top:1px dashed var(--line); }
+  .amount-row{ display:flex;justify-content:space-between;align-items:flex-end; padding-top: 12px; border-top:1px dashed var(--line); }
   .amount-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);}
-  .amount-value{ font-family:'JetBrains Mono',monospace;font-weight:700;font-size:20px;color:var(--ink); }
+  .amount-value{ font-family:'JetBrains Mono',monospace;font-weight:700;font-size:18px;color:var(--cyan); }
   
   .stub-actions{ display:flex;gap:8px; align-items: center; margin-top: 8px; flex-wrap: wrap;}
   .stub-actions button{
-    font-family:'Inter',sans-serif;font-size:11px;font-weight:600; background:var(--paper-2);
-    border:1px solid var(--line);padding:7px 12px;border-radius:4px; cursor:pointer;color:var(--ink); transition: border-color 0.15s ease, background 0.15s ease;
+    font-family:'Inter',sans-serif;font-size:12px;font-weight:500; background:var(--paper);
+    border:1px solid var(--line);padding:7px 12px;border-radius:6px; cursor:pointer;color:var(--ink); transition: border-color 0.15s ease;
   }
-  .stub-actions button:hover{border-color:var(--muted); background:var(--card);}
-  .stub-actions .danger:hover{border-color:var(--gold);color:var(--gold);}
+  .stub-actions button:hover{border-color:var(--muted);}
+  .stub-actions .danger:hover{border-color:var(--danger);color:var(--danger);}
   
-  .stub-actions .view-btn { margin-left:auto; border-color:var(--seal-green); color:var(--paper); background: var(--seal-green); }
-  .stub-actions .view-btn:hover { background: #02b3a3; border-color: #02b3a3; }
-  .stub-actions .view-btn:disabled { background: var(--line); border-color: var(--line); color: var(--muted); cursor: not-allowed; }
+  .stub-actions .view-btn { margin-left:auto; border-color:var(--cyan); color:var(--cyan); background: var(--cyan-dim); }
+  .stub-actions .view-btn:hover { background: rgba(0, 229, 255, 0.25); }
+  .stub-actions .view-btn:disabled { background: transparent; border-color: var(--line); color: var(--line); cursor: not-allowed; }
 
   /* Footer Controls */
   .app-footer {
@@ -110,41 +153,28 @@
       margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); 
       color: var(--muted); font-size: 13px; font-family: 'JetBrains Mono', monospace;
   }
-  .btn-danger-text {
-      background: transparent; border: none; color: var(--gold); cursor: pointer; 
-      font-family: 'Inter', sans-serif; font-size: 13px; padding: 6px 12px; font-weight: 600;
-  }
-  .btn-danger-text:hover { text-decoration: underline; background: rgba(207, 102, 121, 0.1); border-radius: 4px; }
+  .btn-danger-text { background: transparent; border: none; color: var(--danger); cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; padding: 6px 12px; font-weight: 600; }
+  .btn-danger-text:hover { background: rgba(239, 68, 68, 0.1); border-radius: 4px; }
 
-  /* Modals & Overlays - Keyboard Safe */
+  /* Modals & Overlays */
   .overlay{
-    position:fixed;inset:0;background:rgba(0,0,0,0.85); display:none;align-items:center;justify-content:center;
-    padding:16px; z-index:50; backdrop-filter: blur(5px);
+    position:fixed;inset:0;background:rgba(11, 17, 26, 0.9); display:none;align-items:center;justify-content:center;
+    padding:16px; z-index:50; backdrop-filter: blur(4px);
   }
   .overlay.open{display:flex;}
   
   .modal{
-    background:var(--card);border:1px solid var(--line); max-width:640px;width:100%;border-radius:8px;
+    background:var(--card);border:1px solid var(--line); max-width:640px;width:100%;border-radius:var(--border-radius);
     box-shadow:var(--shadow); padding:24px; animation:pop .2s ease both;
     max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column;
   }
   
-  /* Fullscreen PDF Viewer Modal */
-  .modal.pdf-modal {
-      max-width: 1100px; width: 95%; height: 90vh; padding: 0; overflow: hidden; display: flex; flex-direction: column;
-  }
-  .pdf-modal .modal-header {
-      padding: 16px 20px; background: var(--paper-2); border-bottom: 1px solid var(--line);
-      display: flex; justify-content: space-between; align-items: center; margin: 0; flex-shrink: 0;
-  }
-  .pdf-modal .pdf-container {
-      flex: 1; width: 100%; background: #525659; position: relative; overflow: hidden;
-  }
-  
-  @keyframes pop{from{opacity:0;transform:translateY(10px) scale(.98);}to{opacity:1;transform:translateY(0) scale(1);}}
+  .modal.pdf-modal { max-width: 1100px; width: 95%; height: 90vh; padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+  .pdf-modal .modal-header { padding: 16px 20px; background: var(--card); border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; margin: 0; flex-shrink: 0; }
+  .pdf-modal .pdf-container { flex: 1; width: 100%; background: #2a2a2a; position: relative; overflow: hidden; }
   
   .modal-header { margin-bottom: 16px; flex-shrink: 0; }
-  .modal h2{ font-family:'Fraunces',serif;font-weight:600;font-size:22px;margin:0 0 4px; }
+  .modal h2{ font-weight:600;font-size:20px;margin:0 0 4px; color:var(--ink); }
   .modal .modal-sub{font-size:12px;color:var(--muted);}
   
   .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;}
@@ -152,24 +182,25 @@
   @media(max-width: 500px){ .form-grid { grid-template-columns:1fr; } } 
   
   .field label{ display:block;font-family:'JetBrains Mono',monospace;font-size:10px; text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:5px; }
-  .field input{ width:100%;font-family:'Inter',sans-serif;font-size:13px; background:var(--paper);border:1px solid var(--line);border-radius:4px; padding:10px;color:var(--ink); }
+  .field input{ width:100%;font-family:'Inter',sans-serif;font-size:13px; background:var(--paper);border:1px solid var(--line);border-radius:6px; padding:10px;color:var(--ink); outline:none;}
+  .field input:focus { border-color: var(--cyan); }
   .field input[type="file"] { padding: 7px 10px; font-size: 11px; }
   
-  .section-label{ font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase; letter-spacing:.1em;color:var(--stamp);margin:16px 0 4px;grid-column:1/-1; border-top:1px solid var(--line);padding-top:12px; }
+  .section-label{ font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase; letter-spacing:.1em;color:var(--cyan);margin:16px 0 4px;grid-column:1/-1; border-top:1px solid var(--line);padding-top:12px; }
   
-  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px; flex-shrink: 0; padding-top: 10px; background: var(--card); position: sticky; bottom: -24px;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px; flex-shrink: 0; padding-top: 16px; background: var(--card); position: sticky; bottom: -24px;}
   
   .toast{
-    position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(10px); background:var(--stamp);color:var(--paper);
-    padding:10px 18px;border-radius:4px; font-size:13px;font-weight:600;font-family:'Inter',sans-serif;opacity:0;pointer-events:none; transition:all .25s ease;z-index:60; box-shadow: var(--shadow);
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(10px); background:var(--card);color:var(--cyan);
+    border: 1px solid var(--cyan); padding:12px 20px;border-radius:6px; font-size:13px;font-weight:600;opacity:0;pointer-events:none; transition:all .25s ease;z-index:60; box-shadow: var(--shadow);
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
   .checkbox-wrapper { display: flex; align-items: center; cursor: pointer; gap: 8px; font-size: 13px; }
-  input[type="checkbox"] { accent-color: var(--stamp); width: 16px; height: 16px; cursor: pointer; }
+  input[type="checkbox"] { accent-color: var(--cyan); width: 16px; height: 16px; cursor: pointer; }
 
   .qr-wrapper { display: flex; justify-content: center; align-items: center; margin: 24px 0; }
-  #qrCodeContainer { background: white; padding: 16px; border-radius: 8px; display: inline-block; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+  #qrCodeContainer { background: white; padding: 16px; border-radius: 8px; display: inline-block; box-shadow: var(--shadow); }
   
   #receive-overlay {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -178,7 +209,7 @@
   }
   .loading-spinner {
     display: inline-block; width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1);
-    border-top: 4px solid var(--stamp); border-radius: 50%; animation: spin 1s linear infinite; margin: 20px;
+    border-top: 4px solid var(--cyan); border-radius: 50%; animation: spin 1s linear infinite; margin: 20px;
   }
   @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 </style>
@@ -187,22 +218,34 @@
 <div class="wrap">
   <header>
     <div>
-      <div class="brand-eyebrow">Register &middot; Receipt Form 3</div>
+      <div class="brand-eyebrow">Form 3 Register</div>
       <h1>Property Tax Ledger</h1>
-      <div class="subtitle">Keep every Gram Panchayat property tax receipt in one register.</div>
+      <div class="subtitle">Securely parse, store, and share Gram Panchayat receipts.</div>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;">
-      <button class="add-btn secondary-btn" id="openImport" type="button">⇧ Import PDF</button>
-      <button class="add-btn" id="openAdd">+ Add receipt</button>
+      <button class="btn btn-secondary" id="openImport" type="button">⇧ Import PDF</button>
+      <button class="btn btn-primary" id="openAdd">+ Add Manual</button>
       <input type="file" id="pdfInput" accept="application/pdf" multiple style="display:none;">
     </div>
   </header>
 
-  <div class="summary">
-    <div class="cell"><div class="label">Receipts on file</div><div class="value" id="statCount">0</div></div>
-    <div class="cell"><div class="label">Total paid</div><div class="value stamp-color" id="statTotal">₹0</div></div>
-    <div class="cell"><div class="label">Properties</div><div class="value" id="statProps">0</div></div>
-    <div class="cell"><div class="label">Financial years</div><div class="value" id="statYears">0</div></div>
+  <!-- New Deep Slate Dashboard -->
+  <div class="dashboard">
+      <div class="dash-panel">
+          <div class="dash-title">Payment Trend</div>
+          <div class="dash-sub">Bars = Total tax paid per financial year (₹)</div>
+          <div class="chart-area" id="trendChart">
+              <!-- Rendered via JS -->
+          </div>
+      </div>
+      
+      <div class="dash-panel">
+          <div class="dash-title">Tax Breakdown</div>
+          <div class="dash-sub">Charges breakdown from filtered receipts</div>
+          <div id="breakupContainer">
+              <!-- Rendered via JS -->
+          </div>
+      </div>
   </div>
 
   <div class="controls">
@@ -210,11 +253,11 @@
     <select id="filterYear"><option value="">All financial years</option></select>
     
     <div class="action-group">
-        <label class="checkbox-wrapper" style="background: var(--card); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--line);">
+        <label class="checkbox-wrapper" style="background: var(--card); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--line);">
             <input type="checkbox" id="selectAllBtn"> Select All
         </label>
-        <button id="clearSelectionBtn" class="secondary-btn" style="padding: 7px 12px; font-size: 12px;">Clear</button>
-        <button class="add-btn secondary-btn" id="openP2P" type="button" style="padding: 7px 12px; border-color: var(--stamp); color: var(--stamp);">QR Share</button>
+        <button id="clearSelectionBtn" class="btn btn-secondary" style="padding: 9px 12px; font-size: 12px;">Clear</button>
+        <button class="btn btn-secondary" id="openP2P" type="button" style="padding: 9px 12px; border-color: var(--cyan); color: var(--cyan);">QR Share</button>
     </div>
   </div>
 
@@ -231,15 +274,15 @@
 <div class="overlay" id="overlay">
   <div class="modal">
     <div class="modal-header">
-        <h2 id="modalTitle">Add receipt</h2>
+        <h2 id="modalTitle">Record Details</h2>
         <div class="modal-sub">Enter details manually or correct parsed data.</div>
     </div>
     
     <form id="receiptForm" style="display: flex; flex-direction: column; flex: 1;">
       <input type="hidden" id="recordId">
       
-      <div class="field full" style="margin-bottom: 12px;">
-          <label style="color: var(--stamp);">Attach Original PDF (Optional)</label>
+      <div class="field full" style="margin-bottom: 16px;">
+          <label style="color: var(--cyan);">Attach Original PDF (Optional)</label>
           <input type="file" id="manualPdfAttach" accept="application/pdf">
       </div>
 
@@ -268,8 +311,8 @@
       </div>
       
       <div class="modal-actions">
-        <button type="button" class="btn-secondary" onclick="closeModals()">Cancel</button>
-        <button type="submit" class="btn-primary" id="saveBtn">Save receipt</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModals()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="saveBtn">Save Record</button>
       </div>
     </form>
   </div>
@@ -281,12 +324,12 @@
     <div class="modal-header">
         <h2 id="pdfViewerTitle" style="font-size:15px; margin:0; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color: var(--ink);">Document.pdf</h2>
         <div style="display:flex; gap:8px;">
-            <a id="fallbackPdfBtn" target="_blank" class="btn-secondary" style="padding: 6px 12px; text-decoration:none; display:flex; align-items:center; font-size:11px;">Open in App</a>
-            <button class="btn-secondary" onclick="closePdfViewer()" style="padding: 6px 12px;">Close</button>
+            <a id="fallbackPdfBtn" target="_blank" class="btn btn-secondary" style="padding: 6px 12px; text-decoration:none; font-size:12px;">Open Native</a>
+            <button class="btn btn-secondary" onclick="closePdfViewer()" style="padding: 6px 12px;">Close</button>
         </div>
     </div>
     <div class="pdf-container">
-        <iframe id="pdfViewerFrame" type="application/pdf" width="100%" height="100%" style="border:none; background:#525659;"></iframe>
+        <iframe id="pdfViewerFrame" type="application/pdf" width="100%" height="100%" style="border:none; background:#2a2a2a;"></iframe>
     </div>
   </div>
 </div>
@@ -294,7 +337,7 @@
 <!-- Sender P2P Setup Modal -->
 <div class="overlay" id="p2pHostOverlay">
   <div class="modal" style="text-align: center; max-width: 440px;">
-    <h2 style="color: var(--stamp); margin-top:0;">Wi-Fi Direct Share</h2>
+    <h2 style="color: var(--cyan); margin-top:0;">Wi-Fi Direct Share</h2>
     <div class="modal-sub">Scan this code with the receiving device's native camera.</div>
     
     <div class="qr-wrapper" id="qrWrapper" style="display:none;">
@@ -304,21 +347,21 @@
     <p id="p2p-conn-status" style="font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--muted); margin-top: 10px;">Initializing connection...</p>
     
     <div id="p2p-send-controls" style="display:none; margin-top: 20px;">
-        <button class="btn-primary" onclick="executeP2PMergeAndSend()" id="triggerSendBtn" style="width: 100%;">Merge & Transmit to Device</button>
+        <button class="btn btn-primary" onclick="executeP2PMergeAndSend()" id="triggerSendBtn" style="width: 100%;">Merge & Transmit to Device</button>
     </div>
     
     <div class="modal-actions" style="justify-content: center; margin-top: 20px; border-top: 1px solid var(--line); padding-top: 16px;">
-        <button type="button" class="btn-secondary" onclick="closeP2PHost()">Cancel & Close</button>
+        <button type="button" class="btn btn-secondary" onclick="closeP2PHost()">Cancel & Close</button>
     </div>
   </div>
 </div>
 
 <!-- Receiver Full Screen Overlay -->
 <div id="receive-overlay">
-    <h2 style="color: var(--seal-green); font-family: 'Fraunces', serif;">📥 Wi-Fi Transfer Receiver</h2>
+    <h2 style="color: var(--cyan); font-weight:700;">📥 Wi-Fi Transfer Receiver</h2>
     <p id="receive-status" style="color: var(--muted); margin-top: 10px;">Connecting to Host Ledger...</p>
     <div class="loading-spinner" id="receive-loader"></div>
-    <button class="btn-secondary" style="margin-top: 30px;" onclick="window.location.href=window.location.href.split('?')[0]">Cancel & Return to App</button>
+    <button class="btn btn-secondary" style="margin-top: 30px;" onclick="window.location.href=window.location.href.split('?')[0]">Cancel & Return</button>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -381,6 +424,68 @@ function populateYearFilter(){
   sel.value = years.includes(current) ? current : '';
 }
 
+function renderDashboard(filtered) {
+    let tBuild = 0, tBeg = 0, tLib = 0, tHealth = 0, tPaid = 0;
+    const yearTotals = {};
+
+    filtered.forEach(r => {
+        tBuild += (Number(r.taxBuilding)||0);
+        tBeg += (Number(r.cessBeggary)||0);
+        tLib += (Number(r.cessLibrary)||0);
+        tHealth += (Number(r.cessHealth)||0);
+        tPaid += (Number(r.totalAmount)||0);
+        
+        const y = r.finYear || 'N/A';
+        yearTotals[y] = (yearTotals[y] || 0) + (Number(r.totalAmount)||0);
+    });
+
+    // Render Trend Chart
+    const chartEl = document.getElementById('trendChart');
+    if(Object.keys(yearTotals).length === 0) {
+        chartEl.innerHTML = '<div style="color:var(--muted); font-size:12px; margin:auto;">No data available</div>';
+    } else {
+        const sortedYears = Object.keys(yearTotals).sort();
+        const maxVal = Math.max(...Object.values(yearTotals));
+        
+        chartEl.innerHTML = sortedYears.map(year => {
+            const val = yearTotals[year];
+            const heightPct = maxVal === 0 ? 0 : Math.max(5, (val / maxVal) * 100);
+            return `
+            <div class="chart-bar-wrap">
+                <div class="chart-tooltip">${fmtMoney(val)}</div>
+                <div class="chart-bar" style="height: ${heightPct}%;"></div>
+                <div class="chart-label">${escapeHtml(year.substring(0, 4) || year)}</div>
+            </div>`;
+        }).join('');
+    }
+
+    // Render Breakup
+    const brkEl = document.getElementById('breakupContainer');
+    if(tPaid === 0) {
+         brkEl.innerHTML = '<div style="color:var(--muted); font-size:12px; margin-top:20px;">No data available</div>';
+    } else {
+        const items = [
+            { label: 'Tax on Building', val: tBuild, color: 'var(--amber)' },
+            { label: 'Beggary Cess', val: tBeg, color: 'var(--cyan)' },
+            { label: 'Library Cess', val: tLib, color: 'var(--muted)' },
+            { label: 'Health Cess', val: tHealth, color: 'var(--ink)' }
+        ];
+        
+        brkEl.innerHTML = items.map(item => {
+            const pct = (item.val / tPaid) * 100;
+            return `
+            <div class="breakup-item">
+                <div class="b-header"><span>${item.label}</span><span>${fmtMoney(item.val)}</span></div>
+                <div class="b-track"><div class="b-fill" style="width: ${pct}%; background: ${item.color}"></div></div>
+            </div>`;
+        }).join('') + `
+        <div class="b-total">
+            <span>Total Payable Amount</span>
+            <span>${fmtMoney(tPaid)}</span>
+        </div>`;
+    }
+}
+
 function render(){
   const q = document.getElementById('search').value.trim().toLowerCase();
   const yearFilter = document.getElementById('filterYear').value;
@@ -392,16 +497,14 @@ function render(){
   });
   filtered.sort((a,b)=> (b.receiptDate||'').localeCompare(a.receiptDate||'') || (b.id-a.id));
 
-  document.getElementById('statCount').textContent = receipts.length;
-  document.getElementById('statTotal').textContent = fmtMoney(receipts.reduce((s,r)=>s+(Number(r.totalAmount)||0),0));
-  document.getElementById('statProps').textContent = new Set(receipts.map(r=>r.pid||r.propNo).filter(Boolean)).size;
-  document.getElementById('statYears').textContent = new Set(receipts.map(r=>r.finYear).filter(Boolean)).size;
-  
   document.getElementById('footerRecordCount').textContent = `${receipts.length} records saved`;
+  
+  // Update New Dashboard
+  renderDashboard(filtered);
 
   if(filtered.length === 0){
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1; text-align:center; padding: 40px; border: 1px dashed var(--line); border-radius: 8px;">
-        <h3 style="margin:0; font-family:'Fraunces', serif;">No receipts filed</h3>
+    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding: 40px; border: 1px dashed var(--line); border-radius: var(--border-radius);">
+        <h3 style="margin:0; color:var(--muted); font-weight:500;">No matching receipts</h3>
     </div>`; 
     return;
   }
@@ -421,7 +524,7 @@ function render(){
       <div class="meta-grid">
         <div class="meta-field"><span class="m-label">PID</span><span class="m-value">${escapeHtml(r.pid || '—')}</span></div>
         <div class="meta-field"><span class="m-label">Prop No</span><span class="m-value">${escapeHtml(r.propNo || '—')}</span></div>
-        <div class="meta-field wide"><span class="m-label">Loc</span><span class="m-value">${escapeHtml([r.village, r.panchayat].filter(Boolean).join(', ')) || '—'}</span></div>
+        <div class="meta-field wide"><span class="m-label">Location</span><span class="m-value">${escapeHtml([r.village, r.panchayat].filter(Boolean).join(', ')) || '—'}</span></div>
       </div>
       
       <div class="amount-row">
@@ -431,7 +534,7 @@ function render(){
       
       <div class="stub-actions">
         <button onclick="editReceipt(${r.id})">Edit</button>
-        <button class="danger" onclick="deleteReceipt(${r.id})">✕ Delete</button>
+        <button class="danger" onclick="deleteReceipt(${r.id})">Delete</button>
         <button class="view-btn" onclick="openPdfViewer(${r.id}, '${escapeHtml(r.sourceFile || r.receiptNo || 'Document')}')" ${!r.hasPdf ? 'disabled title="No PDF Attached"' : ''}>
             📄 View PDF
         </button>
@@ -460,19 +563,13 @@ function closeModals(){
 /* ---------------- Dedicated PDF Viewer Modal ---------------- */
 window.openPdfViewer = async function(id, filename) {
     const fileBlob = await getPdfBinary(id);
-    
-    // Safety check against the 0-byte array buffer detactment bug
     if(!fileBlob || fileBlob.size === 0) { 
-        showToast("Error: Saved PDF is empty or corrupted. Please re-import this receipt."); 
-        return; 
+        showToast("Error: Saved PDF is empty or corrupted. Please re-import."); return; 
     }
-    
     document.getElementById('pdfViewerTitle').innerText = filename + (filename.toLowerCase().endsWith('.pdf') ? '' : '.pdf');
-    
     if(currentActiveBlobUrl) URL.revokeObjectURL(currentActiveBlobUrl);
     
     currentActiveBlobUrl = URL.createObjectURL(fileBlob);
-    
     document.getElementById('pdfViewerFrame').src = currentActiveBlobUrl;
     document.getElementById('fallbackPdfBtn').href = currentActiveBlobUrl;
     document.getElementById('pdfViewerOverlay').classList.add('open');
@@ -481,10 +578,7 @@ window.openPdfViewer = async function(id, filename) {
 window.closePdfViewer = function() {
     document.getElementById('pdfViewerOverlay').classList.remove('open');
     document.getElementById('pdfViewerFrame').src = ''; 
-    if(currentActiveBlobUrl) {
-        URL.revokeObjectURL(currentActiveBlobUrl);
-        currentActiveBlobUrl = null;
-    }
+    if(currentActiveBlobUrl) { URL.revokeObjectURL(currentActiveBlobUrl); currentActiveBlobUrl = null; }
 }
 
 /* ------------------------------------------------------------ */
@@ -508,14 +602,8 @@ window.deleteReceipt = async function(id){
 /* Clear Cache / Reset Functionality */
 window.clearAllData = async function() {
     if(!confirm('Are you absolutely sure you want to delete ALL receipts and PDF files? This action cannot be undone.')) return;
-    
-    receipts = [];
-    await persist();
-    
-    const db = await dbPromise;
-    const tx = db.transaction('pdfs', 'readwrite');
-    tx.objectStore('pdfs').clear();
-    
+    receipts = []; await persist();
+    const db = await dbPromise; const tx = db.transaction('pdfs', 'readwrite'); tx.objectStore('pdfs').clear();
     populateYearFilter(); render(); showToast('All app data and cache cleared.');
 };
 
@@ -526,9 +614,7 @@ document.getElementById('receiptForm').addEventListener('submit', async (e)=>{
   const newId = editingId ?? (Date.now() + Math.floor(Math.random() * 10000));
   
   const manualFile = document.getElementById('manualPdfAttach').files[0];
-  if(manualFile) {
-      pendingPdfBlob = new Blob([await manualFile.arrayBuffer()], { type: 'application/pdf' });
-  }
+  if(manualFile) pendingPdfBlob = new Blob([await manualFile.arrayBuffer()], { type: 'application/pdf' });
   
   const data = {
     ...base, id: newId,
@@ -547,11 +633,10 @@ document.getElementById('receiptForm').addEventListener('submit', async (e)=>{
 
   if(editingId){ const idx = receipts.findIndex(r=>r.id===editingId); if(idx>-1) receipts[idx] = data; } else { receipts.push(data); }
   if(pendingPdfBlob) await savePdfBinary(newId, pendingPdfBlob);
-  
   await persist(); populateYearFilter(); render(); closeModals(); showToast(editingId ? 'Updated' : 'Added');
 });
 
-/* ---------- PDF Parsing (Fixed Data Consumption Bug) ---------- */
+/* ---------- PDF Parsing  ---------- */
 if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 const PAYMENT_TYPE_MAP = {'ಡಿ.ಡಿ': 'DD', 'ನಗದು': 'Cash', 'ಚೆಕ್': 'Cheque', 'ಆನ್\u200cಲೈನ್': 'Online', 'ಆನ್‌ಲೈನ್': 'Online', 'ಕಾರ್ಡ್': 'Card', 'ಚಲನ್': 'Challan'};
 function num(s){ if (s === undefined || s === null) return 0; const n = parseFloat(String(s).replace(/,/g,'')); return isNaN(n) ? 0 : n; }
@@ -560,8 +645,7 @@ async function pdfToLines(pdf){
   for (let p = 1; p <= pdf.numPages; p++){
     const page = await pdf.getPage(p); const content = await page.getTextContent();
     const items = content.items.filter(it => it.str !== undefined).map(it => ({ str: it.str, x: it.transform[4], y: it.transform[5] }));
-    items.sort((a,b) => (b.y - a.y) || (a.x - b.x));
-    let curY = null, curLine = []; const TOL = 3;
+    items.sort((a,b) => (b.y - a.y) || (a.x - b.x)); let curY = null, curLine = []; const TOL = 3;
     for (const it of items){
       if (curY === null || Math.abs(it.y - curY) <= TOL){ curLine.push(it.str); if (curY === null) curY = it.y; } 
       else { allLines.push(curLine.join(' ').replace(/\s+/g,' ').trim()); curLine = [it.str]; curY = it.y; }
@@ -620,13 +704,9 @@ pdfInput.addEventListener('change', async () => {
   let ok = 0;
   for (const file of files){
     try{
-      const buf = await file.arrayBuffer(); 
-      // Clone the buffer so PDF.js doesn't consume the data and leave a 0-byte file
-      const bufForParsing = buf.slice(0);
-      
+      const buf = await file.arrayBuffer(); const bufForParsing = buf.slice(0);
       const pdf = await pdfjsLib.getDocument({ data: bufForParsing }).promise;
-      const lines = await pdfToLines(pdf); 
-      const fields = extractFieldsFromLines(lines);
+      const lines = await pdfToLines(pdf); const fields = extractFieldsFromLines(lines);
       
       const newId = Date.now() + Math.floor(Math.random()*1000);
       const fileBlob = new Blob([buf], { type: 'application/pdf' });
@@ -641,12 +721,8 @@ pdfInput.addEventListener('change', async () => {
 });
 
 /* ===================== WiFi P2P MERGE & SHARE ===================== */
+let peerInstance = null; let activeConnection = null; let hostQrObj = null;
 
-let peerInstance = null;
-let activeConnection = null;
-let hostQrObj = null;
-
-// SENDER LOGIC (Host)
 document.getElementById('openP2P').addEventListener('click', () => {
     const selected = document.querySelectorAll('.record-cb:checked');
     if(selected.length === 0) { showToast('Please select records to merge first.'); return; }
@@ -672,7 +748,7 @@ document.getElementById('openP2P').addEventListener('click', () => {
         activeConnection = conn;
         activeConnection.on('open', () => {
             statusEl.innerText = "✅ Device Connected! Ready to transmit.";
-            statusEl.style.color = "var(--seal-green)";
+            statusEl.style.color = "var(--cyan)";
             document.getElementById('p2p-send-controls').style.display = 'block';
             document.getElementById('qrWrapper').style.display = 'none';
         });
@@ -703,17 +779,11 @@ async function executeP2PMergeAndSend() {
         btn.innerText = "Transmitting...";
         const payloadBytes = await mergedPdf.save();
         
-        activeConnection.send({ 
-            file: payloadBytes, 
-            name: `Tax_Ledger_Export_${new Date().getTime()}.pdf` 
-        });
+        activeConnection.send({ file: payloadBytes, name: `Tax_Ledger_Export_${new Date().getTime()}.pdf` });
         
         showToast("Payload transmitted successfully!");
         setTimeout(closeP2PHost, 1000);
-        
-    } catch(e) {
-        showToast(e.message);
-    }
+    } catch(e) { showToast(e.message); }
     btn.innerText = "Merge & Transmit to Device"; btn.disabled = false;
 }
 
@@ -723,19 +793,13 @@ function closeP2PHost() {
     if(peerInstance) peerInstance.destroy();
 }
 
-// RECEIVER LOGIC (Client)
 const receiveId = new URLSearchParams(window.location.search).get('receive_peer');
 if (receiveId) {
     document.getElementById('receive-overlay').style.display = 'flex';
-    
     peerInstance = new Peer();
     peerInstance.on('open', () => {
         activeConnection = peerInstance.connect(receiveId);
-        
-        activeConnection.on('open', () => { 
-            document.getElementById('receive-status').innerText = 'Connected! Waiting for Host payload...'; 
-        });
-        
+        activeConnection.on('open', () => { document.getElementById('receive-status').innerText = 'Connected! Waiting for Host payload...'; });
         activeConnection.on('data', (data) => { 
             document.getElementById('receive-loader').style.display = 'none'; 
             document.getElementById('receive-status').innerText = `Received file! Downloading...`; 
@@ -743,15 +807,9 @@ if (receiveId) {
             const blob = new Blob([data.file], { type: "application/pdf" });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement("a"); 
-            a.href = url; a.download = data.name; 
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            a.href = url; a.download = data.name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
         });
-        
-        activeConnection.on('error', () => { 
-            document.getElementById('receive-status').innerText = 'Connection disconnected.'; 
-        });
+        activeConnection.on('error', () => { document.getElementById('receive-status').innerText = 'Connection disconnected.'; });
     });
 }
 
