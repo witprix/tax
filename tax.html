@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Property Tax Ledger</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,14 +20,14 @@
     --ink: #e0e0e0; --paper: #121212; --paper-2: #1e1e1e;
     --stamp: #bb86fc; --stamp-dark: #9965f4; --seal-green: #03dac6;
     --gold: #cf6679; --muted: #888888; --line: #2c2c2c; --card: #1a1a1a;
-    --shadow: 0 4px 12px rgba(0,0,0,0.5);
+    --shadow: 0 8px 24px rgba(0,0,0,0.6);
   }
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;background:var(--paper);}
+  html,body{margin:0;padding:0;background:var(--paper); -webkit-tap-highlight-color: transparent;}
   body{
     font-family:'Inter',sans-serif; color:var(--ink);
     background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
-    background-size: 22px 22px; min-height:100vh; padding:32px 20px 80px;
+    background-size: 22px 22px; min-height:100vh; padding:24px 16px 80px;
   }
   .wrap{max-width:1340px;margin:0 auto;}
 
@@ -36,20 +36,20 @@
     border-bottom:2px solid var(--line); padding-bottom:18px;margin-bottom:22px; gap:16px;flex-wrap:wrap;
   }
   .brand-eyebrow{ font-family:'JetBrains Mono',monospace; font-size:11px;letter-spacing:.18em;text-transform:uppercase; color:var(--stamp);font-weight:600;margin-bottom:6px; }
-  h1{ font-family:'Fraunces',serif; font-weight:600; font-size:clamp(28px,4vw,40px); margin:0;letter-spacing:-0.01em; }
-  .subtitle{font-size:13px;color:var(--muted);margin-top:4px;max-width:520px;}
+  h1{ font-family:'Fraunces',serif; font-weight:600; font-size:clamp(24px,4vw,36px); margin:0;letter-spacing:-0.01em; }
+  .subtitle{font-size:13px;color:var(--muted);margin-top:4px;max-width:520px; line-height: 1.4;}
   
   .add-btn{
-    font-family:'Inter',sans-serif; font-weight:600;font-size:14px;
-    background:var(--ink);color:var(--paper); border:none;padding:12px 20px;border-radius:4px;
-    cursor:pointer;letter-spacing:.02em; transition:transform .15s ease, background .15s ease; box-shadow: var(--shadow);
+    font-family:'Inter',sans-serif; font-weight:600;font-size:13px;
+    background:var(--ink);color:var(--paper); border:none;padding:10px 16px;border-radius:4px;
+    cursor:pointer;letter-spacing:.02em; transition:transform .15s ease, background .15s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   }
   .add-btn:hover{background:var(--stamp);color:var(--paper); transform:translateY(-1px);}
   .secondary-btn{background:var(--card);color:var(--ink);border:1px solid var(--line);}
   .secondary-btn:hover{background:var(--line);color:var(--ink);}
 
   .summary{
-    display:grid;grid-template-columns:repeat(4,1fr); gap:1px;background:var(--line);
+    display:grid;grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:1px;background:var(--line);
     border:1px solid var(--line); margin-bottom:26px; border-radius: 4px; overflow: hidden;
   }
   .summary .cell{ background:var(--card);padding:16px 18px; }
@@ -62,18 +62,17 @@
     font-family:'Inter',sans-serif;font-size:13px; background:var(--card);
     border:1px solid var(--line); padding:10px 12px;border-radius:4px;color:var(--ink);
   }
-  .controls input[type=text]{flex:1;min-width:180px;}
-  .controls .action-group { display: flex; gap: 8px; margin-left: auto; align-items: center;}
-  .empty-count{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+  .controls input[type=text]{flex:1;min-width:200px;}
+  .controls .action-group { display: flex; gap: 8px; margin-left: auto; align-items: center; flex-wrap: wrap;}
 
-  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:16px; width: 100%; }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:16px; width: 100%; }
   
   .stub{
     background:var(--card); border:1px solid var(--line); border-radius:8px; position:relative;
     padding:18px 20px; display:flex;flex-direction:column;gap:12px; animation:rise .35s ease both;
     transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   }
-  .stub:hover { transform: translateY(-2px); border-color: var(--muted); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+  .stub:hover { transform: translateY(-2px); border-color: var(--muted); box-shadow: var(--shadow); }
   @keyframes rise{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
   
   .stub-header-row{ display:flex;justify-content:space-between;align-items:center; gap: 10px; }
@@ -90,7 +89,7 @@
   
   .amount-row{ display:flex;justify-content:space-between;align-items:flex-end; padding-top: 4px; }
   .amount-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);}
-  .amount-value{ font-family:'JetBrains Mono',monospace;font-weight:700;font-size:22px;color:var(--ink); }
+  .amount-value{ font-family:'JetBrains Mono',monospace;font-weight:700;font-size:20px;color:var(--ink); }
   
   .stub-actions{ display:flex;gap:8px; align-items: center; margin-top: 4px; flex-wrap: wrap;}
   .stub-actions button{
@@ -99,30 +98,39 @@
   }
   .stub-actions button:hover{border-color:var(--muted);}
   .stub-actions .danger:hover{border-color:var(--gold);color:var(--gold);}
+  .stub-actions .view-btn { margin-left:auto; border-color:var(--seal-green); color:var(--seal-green); background: rgba(3, 218, 198, 0.05); }
+  .stub-actions .view-btn:hover { background: rgba(3, 218, 198, 0.15); border-color: var(--seal-green); }
 
-  /* Modals & Overlays */
+  /* Modals & Overlays - Keyboard Safe */
   .overlay{
-    position:fixed;inset:0;background:rgba(0,0,0,0.85); display:none;align-items:flex-start;justify-content:center;
-    padding:40px 16px;overflow-y:auto;z-index:50; backdrop-filter: blur(5px);
+    position:fixed;inset:0;background:rgba(0,0,0,0.85); display:none;align-items:center;justify-content:center;
+    padding:16px; z-index:50; backdrop-filter: blur(5px);
   }
   .overlay.open{display:flex;}
+  
   .modal{
-    background:var(--card);border:1px solid var(--line); max-width:640px;width:100%;border-radius:6px;
-    box-shadow:0 20px 60px -20px rgba(0,0,0,0.8); padding:28px 28px 24px; animation:pop .2s ease both;
+    background:var(--card);border:1px solid var(--line); max-width:640px;width:100%;border-radius:8px;
+    box-shadow:var(--shadow); padding:24px; animation:pop .2s ease both;
+    /* Crucial for mobile keyboards */
+    max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column;
   }
-  .modal.large { max-width: 900px; height: 85vh; display: flex; flex-direction: column;}
   @keyframes pop{from{opacity:0;transform:translateY(10px) scale(.98);}to{opacity:1;transform:translateY(0) scale(1);}}
   
+  .modal-header { margin-bottom: 16px; flex-shrink: 0; }
   .modal h2{ font-family:'Fraunces',serif;font-weight:600;font-size:22px;margin:0 0 4px; }
-  .modal .modal-sub{font-size:12px;color:var(--muted);margin-bottom:18px;}
+  .modal .modal-sub{font-size:12px;color:var(--muted);}
   
   .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;}
   .form-grid .full{grid-column:1/-1;}
+  @media(max-width: 500px){ .form-grid { grid-template-columns:1fr; } } /* Stack inputs on small mobile */
+  
   .field label{ display:block;font-family:'JetBrains Mono',monospace;font-size:10px; text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:5px; }
-  .field input{ width:100%;font-family:'Inter',sans-serif;font-size:13px; background:var(--paper);border:1px solid var(--line);border-radius:4px; padding:9px 10px;color:var(--ink); }
+  .field input{ width:100%;font-family:'Inter',sans-serif;font-size:13px; background:var(--paper);border:1px solid var(--line);border-radius:4px; padding:10px;color:var(--ink); }
+  .field input[type="file"] { padding: 7px 10px; font-size: 11px; }
   
   .section-label{ font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase; letter-spacing:.1em;color:var(--stamp);margin:16px 0 4px;grid-column:1/-1; border-top:1px solid var(--line);padding-top:12px; }
-  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+  
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px; flex-shrink: 0; padding-top: 10px; background: var(--card); position: sticky; bottom: -24px;}
   
   .btn-secondary{ background:transparent;border:1px solid var(--line);padding:10px 16px;border-radius:4px; font-family:'Inter',sans-serif;font-weight:600;font-size:13px;cursor:pointer;color:var(--ink); }
   .btn-primary{ background:var(--ink);color:var(--paper);border:none;padding:10px 18px;border-radius:4px; font-family:'Inter',sans-serif;font-weight:600;font-size:13px;cursor:pointer; }
@@ -130,17 +138,24 @@
 
   .toast{
     position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(10px); background:var(--stamp);color:var(--paper);
-    padding:10px 18px;border-radius:4px; font-size:13px;font-weight:600;font-family:'Inter',sans-serif;opacity:0;pointer-events:none; transition:all .25s ease;z-index:60;
+    padding:10px 18px;border-radius:4px; font-size:13px;font-weight:600;font-family:'Inter',sans-serif;opacity:0;pointer-events:none; transition:all .25s ease;z-index:60; box-shadow: var(--shadow);
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-  /* PDF Viewer & P2P Specific styles */
-  #pdfViewerFrame { width: 100%; flex: 1; border: 1px solid var(--line); border-radius: 4px; background: var(--paper); }
-  #qrCodeContainer { background: white; padding: 16px; display: inline-block; border-radius: 4px; margin: 16px 0; }
+  /* QR and Checkbox specific */
   .checkbox-wrapper { display: flex; align-items: center; cursor: pointer; gap: 8px; font-size: 13px; }
   input[type="checkbox"] { accent-color: var(--stamp); width: 16px; height: 16px; cursor: pointer; }
 
-  /* Receive Mode Full-Screen Overlay */
+  /* Perfectly centered, styled QR Wrapper */
+  .qr-wrapper {
+      display: flex; justify-content: center; align-items: center; margin: 24px 0;
+  }
+  #qrCodeContainer { 
+      background: white; padding: 16px; border-radius: 8px; display: inline-block; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  }
+  
+  /* Receiver Full Screen Overlay */
   #receive-overlay {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: var(--paper); z-index: 1000; flex-direction: column; align-items: center; justify-content: center;
@@ -183,21 +198,31 @@
         <label class="checkbox-wrapper" style="background: var(--card); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--line);">
             <input type="checkbox" id="selectAllBtn"> Select All
         </label>
-        <button id="clearSelectionBtn" class="secondary-btn" style="padding: 7px 12px; font-size: 12px;">Clear Selection</button>
-        <button class="add-btn secondary-btn" id="openP2P" type="button" style="padding: 7px 12px; border-color: var(--stamp); color: var(--stamp);">QR Merge & Share</button>
+        <button id="clearSelectionBtn" class="secondary-btn" style="padding: 7px 12px; font-size: 12px;">Clear</button>
+        <button class="add-btn secondary-btn" id="openP2P" type="button" style="padding: 7px 12px; border-color: var(--stamp); color: var(--stamp);">QR Share</button>
     </div>
   </div>
 
   <div class="grid" id="grid"></div>
 </div>
 
-<!-- Add/Edit Modal -->
+<!-- Add/Edit Modal with Scroll Fix -->
 <div class="overlay" id="overlay">
   <div class="modal">
-    <h2 id="modalTitle">Add receipt</h2>
-    <div class="modal-sub">Enter the details exactly as they appear on Receipt Form 3.</div>
-    <form id="receiptForm">
+    <div class="modal-header">
+        <h2 id="modalTitle">Add receipt</h2>
+        <div class="modal-sub">Enter details manually or correct parsed data.</div>
+    </div>
+    
+    <form id="receiptForm" style="display: flex; flex-direction: column; flex: 1;">
       <input type="hidden" id="recordId">
+      
+      <!-- Optional Attachment for manual entries -->
+      <div class="field full" style="margin-bottom: 12px;">
+          <label style="color: var(--stamp);">Attach Original PDF (Optional)</label>
+          <input type="file" id="manualPdfAttach" accept="application/pdf">
+      </div>
+
       <div class="form-grid">
         <div class="field"><label>Owner name</label><input id="ownerName" required></div>
         <div class="field"><label>Financial year</label><input id="finYear" placeholder="2024-2025" required></div>
@@ -221,6 +246,7 @@
         <div class="field"><label>Round off</label><input id="roundOff" type="number" step="0.01" value="0"></div>
         <div class="field"><label>Total payment amount</label><input id="totalAmount" type="number" step="0.01" min="0" required></div>
       </div>
+      
       <div class="modal-actions">
         <button type="button" class="btn-secondary" onclick="closeModals()">Cancel</button>
         <button type="submit" class="btn-primary" id="saveBtn">Save receipt</button>
@@ -229,30 +255,24 @@
   </div>
 </div>
 
-<!-- PDF Viewer Modal -->
-<div class="overlay" id="pdfViewerOverlay">
-  <div class="modal large">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;">
-        <h2 style="margin:0;">Original Receipt</h2>
-        <button class="btn-secondary" onclick="closeModals()">Close View</button>
-    </div>
-    <iframe id="pdfViewerFrame"></iframe>
-  </div>
-</div>
-
-<!-- Sender P2P Setup Modal -->
+<!-- Sender P2P Setup Modal (Fixed QR Alignment) -->
 <div class="overlay" id="p2pHostOverlay">
-  <div class="modal" style="text-align: center;">
-    <h2 style="color: var(--stamp);">Wi-Fi Direct Share</h2>
+  <div class="modal" style="text-align: center; max-width: 440px;">
+    <h2 style="color: var(--stamp); margin-top:0;">Wi-Fi Direct Share</h2>
     <div class="modal-sub">Scan this code with the receiving device's native camera.</div>
-    <div id="qrCodeContainer" style="display:none;"></div>
+    
+    <!-- Flex wrapper forces tight borders around QR -->
+    <div class="qr-wrapper" id="qrWrapper" style="display:none;">
+        <div id="qrCodeContainer"></div>
+    </div>
+    
     <p id="p2p-conn-status" style="font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--muted); margin-top: 10px;">Initializing connection...</p>
     
     <div id="p2p-send-controls" style="display:none; margin-top: 20px;">
-        <button class="btn-primary" onclick="executeP2PMergeAndSend()" id="triggerSendBtn">Send Selected PDFs</button>
+        <button class="btn-primary" onclick="executeP2PMergeAndSend()" id="triggerSendBtn" style="width: 100%;">Merge & Transmit to Device</button>
     </div>
     
-    <div class="modal-actions" style="justify-content: center; margin-top: 20px;">
+    <div class="modal-actions" style="justify-content: center; margin-top: 20px; border-top: 1px solid var(--line); padding-top: 16px;">
         <button type="button" class="btn-secondary" onclick="closeP2PHost()">Cancel & Close</button>
     </div>
   </div>
@@ -363,7 +383,7 @@ function render(){
       <div class="stub-actions">
         <button onclick="editReceipt(${r.id})">Edit</button>
         <button class="danger" onclick="deleteReceipt(${r.id})">Del</button>
-        ${r.hasPdf ? `<button style="margin-left:auto; border-color:var(--seal-green); color:var(--seal-green);" onclick="viewPdf(${r.id})">View Original</button>` : ''}
+        ${r.hasPdf ? `<button class="view-btn" onclick="viewPdf(${r.id})">View PDF</button>` : ''}
       </div>
     </div>
   `).join('');
@@ -384,7 +404,6 @@ function closeModals(){
   document.querySelectorAll('.overlay').forEach(el => { if(el.id !== 'receive-overlay') el.classList.remove('open') });
   document.getElementById('receiptForm').reset();
   editingId = null; pendingExtra = null; pendingPdfBlob = null;
-  document.getElementById('pdfViewerFrame').src = ''; // Purge memory
 }
 
 document.getElementById('openAdd').addEventListener('click', ()=>{ document.getElementById('overlay').classList.add('open'); });
@@ -403,17 +422,31 @@ window.deleteReceipt = async function(id){
   populateYearFilter(); render(); showToast('Receipt deleted');
 };
 
+/* Bulletproof Mobile PDF Viewer */
 window.viewPdf = async function(id) {
     const fileBlob = await getPdfBinary(id);
-    if(!fileBlob) { showToast("Original PDF missing."); return; }
-    document.getElementById('pdfViewerFrame').src = URL.createObjectURL(fileBlob);
-    document.getElementById('pdfViewerOverlay').classList.add('open');
+    if(!fileBlob) { showToast("Original PDF missing from database."); return; }
+    
+    // Creates a secure blob URL and opens it via the browser's native PDF handler in a new tab.
+    // This entirely avoids iframe bugs on mobile Safari/Chrome.
+    const url = URL.createObjectURL(fileBlob);
+    window.open(url, '_blank');
+    
+    // Revoke memory after giving the new tab enough time to load the file
+    setTimeout(() => { URL.revokeObjectURL(url); }, 10000); 
 }
 
+/* Manual Form Submission */
 document.getElementById('receiptForm').addEventListener('submit', async (e)=>{
   e.preventDefault();
   const base = editingId ? (receipts.find(r=>r.id===editingId) || {}) : (pendingExtra || {});
   const newId = editingId ?? (Date.now() + Math.floor(Math.random() * 10000));
+  
+  // Capture manually attached PDF if present
+  const manualFile = document.getElementById('manualPdfAttach').files[0];
+  if(manualFile) {
+      pendingPdfBlob = new Blob([await manualFile.arrayBuffer()], { type: 'application/pdf' });
+  }
   
   const data = {
     ...base, id: newId,
@@ -432,6 +465,7 @@ document.getElementById('receiptForm').addEventListener('submit', async (e)=>{
 
   if(editingId){ const idx = receipts.findIndex(r=>r.id===editingId); if(idx>-1) receipts[idx] = data; } else { receipts.push(data); }
   if(pendingPdfBlob) await savePdfBinary(newId, pendingPdfBlob);
+  
   await persist(); populateYearFilter(); render(); closeModals(); showToast(editingId ? 'Updated' : 'Added');
 });
 
@@ -537,13 +571,12 @@ document.getElementById('openP2P').addEventListener('click', () => {
     peerInstance = new Peer();
     
     peerInstance.on('open', (id) => {
-        // Generate the URL route parameters[cite: 2]
         const shareUrl = window.location.href.split('?')[0] + '?receive_peer=' + id;
-        document.getElementById('qrCodeContainer').style.display = 'block';
+        document.getElementById('qrWrapper').style.display = 'flex';
         document.getElementById('qrCodeContainer').innerHTML = '';
         
         hostQrObj = new QRCode(document.getElementById('qrCodeContainer'), {
-            text: shareUrl, width: 200, height: 200, colorDark : "#e0e0e0", colorLight : "#121212"
+            text: shareUrl, width: 220, height: 220, colorDark : "#121212", colorLight : "#ffffff"
         });
         statusEl.innerText = "Host ID active. Scan with target device.";
     });
@@ -554,7 +587,7 @@ document.getElementById('openP2P').addEventListener('click', () => {
             statusEl.innerText = "✅ Device Connected! Ready to transmit.";
             statusEl.style.color = "var(--seal-green)";
             document.getElementById('p2p-send-controls').style.display = 'block';
-            document.getElementById('qrCodeContainer').style.display = 'none';
+            document.getElementById('qrWrapper').style.display = 'none';
         });
     });
 });
@@ -589,12 +622,12 @@ async function executeP2PMergeAndSend() {
         });
         
         showToast("Payload transmitted successfully!");
-        closeP2PHost();
+        setTimeout(closeP2PHost, 1000);
         
     } catch(e) {
         showToast(e.message);
     }
-    btn.innerText = "Send Selected PDFs"; btn.disabled = false;
+    btn.innerText = "Merge & Transmit to Device"; btn.disabled = false;
 }
 
 function closeP2PHost() {
@@ -606,7 +639,6 @@ function closeP2PHost() {
 // RECEIVER LOGIC (Client)
 const receiveId = new URLSearchParams(window.location.search).get('receive_peer');
 if (receiveId) {
-    // Reveal full screen overlay immediately upon page load[cite: 2]
     document.getElementById('receive-overlay').style.display = 'flex';
     
     peerInstance = new Peer();
@@ -621,7 +653,6 @@ if (receiveId) {
             document.getElementById('receive-loader').style.display = 'none'; 
             document.getElementById('receive-status').innerText = `Received file! Downloading...`; 
             
-            // Trigger download on client device[cite: 2]
             const blob = new Blob([data.file], { type: "application/pdf" });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement("a"); 
