@@ -63,43 +63,37 @@
   .btn-secondary{ background:var(--card); color:var(--ink); border:1px solid var(--line); }
   .btn-secondary:hover{ background:var(--paper-2); border-color:var(--muted); }
 
-  /* ---------------- Ultra-Compact Mini-Dash ---------------- */
-  .mini-dash {
-      display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 16px; margin-bottom: 20px;
+  /* ---------------- ULTRA-SLIM DASHBOARD ---------------- */
+  .slim-dash {
+      display: flex; gap: 24px; background: var(--card); border: 1px solid var(--line);
+      border-radius: var(--border-radius); padding: 16px 20px; margin-bottom: 20px;
+      align-items: center; flex-wrap: wrap; box-shadow: var(--shadow);
   }
-  .md-panel {
-      background: var(--card); border: 1px solid var(--line); border-radius: var(--border-radius);
-      padding: 14px 16px; display: flex; flex-direction: column; justify-content: center;
-  }
-  .md-title { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 8px; font-weight: 600;}
+  .sd-totals { flex: 0 0 auto; padding-right: 24px; border-right: 1px solid var(--line); }
+  .sd-totals .label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;}
+  .sd-totals .val { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 600; color: var(--amber); margin: 2px 0 4px 0; }
+  .sd-totals .sub { display:flex; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--cyan); }
   
-  /* Stats Panel */
-  .md-total { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 600; color: var(--amber); margin-bottom: 6px; line-height: 1;}
-  .md-chips { display: flex; gap: 8px; flex-wrap: wrap; }
-  .md-chip { font-size: 10px; font-family: 'JetBrains Mono', monospace; background: var(--paper-2); padding: 4px 8px; border-radius: 4px; color: var(--muted); border: 1px solid var(--line);}
+  .sd-breakdown { flex: 1; min-width: 280px; }
+  .stacked-bar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--paper-2); margin-bottom: 12px; }
+  .stacked-bar .seg { height: 100%; transition: width 0.3s ease; }
+  .seg.build { background: var(--cyan); }
+  .seg.beggary { background: #8b5cf6; } 
+  .seg.lib { background: #10b981; } 
+  .seg.health { background: #f59e0b; } 
+  .seg.other { background: var(--danger); }
   
-  /* Trend Panel */
-  .md-chart { display: flex; align-items: flex-end; gap: 6px; height: 50px; flex: 1; }
-  .chart-bar-wrap { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; position: relative;}
-  .chart-bar { width: 100%; max-width: 24px; background: var(--cyan); border-radius: 3px 3px 0 0; min-height: 2px; transition: height 0.5s ease;}
-  .chart-label { font-size: 9px; color: var(--muted); margin-top: 4px; font-family: 'JetBrains Mono', monospace;}
-  .chart-tooltip {
-      position: absolute; top: -24px; background: var(--paper); border: 1px solid var(--line);
-      padding: 2px 6px; border-radius: 4px; font-size: 10px; font-family: 'JetBrains Mono', monospace;
-      color: var(--amber); opacity: 0; pointer-events: none; transition: opacity 0.2s; white-space: nowrap; z-index: 10;
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+  .legend-item { display: flex; align-items: center; gap: 6px; color: var(--muted); }
+  .legend-item .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .legend-item span { color: var(--ink); font-weight: 600;}
+  .legend-item.discount span { color: #10b981; }
+
+  @media(max-width: 600px){ 
+      .slim-dash { flex-direction: column; align-items: flex-start; gap: 16px; }
+      .sd-totals { border-right: none; border-bottom: 1px solid var(--line); padding-right: 0; padding-bottom: 12px; width: 100%;}
+      .sd-breakdown { width: 100%; }
   }
-  .chart-bar-wrap:hover .chart-tooltip { opacity: 1; }
-
-  /* Breakup Panel */
-  .md-breakup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
-  .bk-item { display: flex; flex-direction: column; gap: 3px; }
-  .bk-head { display: flex; justify-content: space-between; font-size: 10px; color: var(--ink); }
-  .bk-head span:last-child { font-family: 'JetBrains Mono', monospace; color: var(--muted); }
-  .bk-track { width: 100%; height: 3px; background: var(--paper); border-radius: 2px; overflow: hidden; }
-  .bk-fill { height: 100%; border-radius: 2px; }
-
-  @media(max-width: 900px){ .mini-dash { grid-template-columns: 1fr 1fr; } .md-panel:nth-child(3) { grid-column: 1 / -1; } }
-  @media(max-width: 600px){ .mini-dash { grid-template-columns: 1fr; } }
 
   /* Controls */
   .controls{ display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center; }
@@ -226,27 +220,22 @@
     </div>
   </header>
 
-  <!-- Ultra Compact Mini-Dash -->
-  <div class="mini-dash">
-      <div class="md-panel">
-          <div class="md-title">Total Paid</div>
-          <div class="md-total" id="mdTotal">₹0</div>
-          <div class="md-chips">
-              <span class="md-chip" id="mdCount">0 Receipts</span>
-              <span class="md-chip" id="mdProps">0 Properties</span>
+  <!-- Ultra Compact Slim Dash -->
+  <div class="slim-dash">
+      <div class="sd-totals">
+          <div class="label">Total Paid</div>
+          <div class="val" id="sdTotal">₹0</div>
+          <div class="sub">
+              <span id="sdCount">0 Receipts</span> &bull; 
+              <span id="sdProps">0 Properties</span>
           </div>
       </div>
       
-      <div class="md-panel">
-          <div class="md-title">Payment Trend</div>
-          <div class="md-chart" id="trendChart">
+      <div class="sd-breakdown">
+          <div class="stacked-bar" id="sdStackBar">
               <!-- Rendered via JS -->
           </div>
-      </div>
-      
-      <div class="md-panel">
-          <div class="md-title">Tax Breakdown (Total Demand)</div>
-          <div class="md-breakup-grid" id="breakupContainer">
+          <div class="legend" id="sdLegend">
               <!-- Rendered via JS -->
           </div>
       </div>
@@ -310,8 +299,9 @@
         <div class="field"><label>Beggary cess</label><input id="cessBeggary" type="number" step="0.01" min="0" value="0"></div>
         <div class="field"><label>Library cess</label><input id="cessLibrary" type="number" step="0.01" min="0" value="0"></div>
         <div class="field"><label>Health cess</label><input id="cessHealth" type="number" step="0.01" min="0" value="0"></div>
+        <div class="field"><label>Discount (-)</label><input id="taxDiscount" type="number" step="0.01" min="0" value="0"></div>
         <div class="field"><label>Round off</label><input id="roundOff" type="number" step="0.01" value="0"></div>
-        <div class="field"><label>Total payment amount</label><input id="totalAmount" type="number" step="0.01" min="0" required></div>
+        <div class="field full"><label>Total payment amount</label><input id="totalAmount" type="number" step="0.01" min="0" required></div>
       </div>
       
       <div class="modal-actions">
@@ -429,70 +419,60 @@ function populateYearFilter(){
 }
 
 function renderDashboard(filtered) {
-    let tBuild = 0, tBeg = 0, tLib = 0, tHealth = 0, tPaid = 0;
-    const yearTotals = {};
+    let tBuild = 0, tBeg = 0, tLib = 0, tHealth = 0, tDisc = 0, tPaid = 0;
 
     filtered.forEach(r => {
         tBuild += (Number(r.taxBuilding)||0);
         tBeg += (Number(r.cessBeggary)||0);
         tLib += (Number(r.cessLibrary)||0);
         tHealth += (Number(r.cessHealth)||0);
+        tDisc += (Number(r.taxDiscount)||0);
         tPaid += (Number(r.totalAmount)||0);
-        
-        const y = r.finYear || 'N/A';
-        yearTotals[y] = (yearTotals[y] || 0) + (Number(r.totalAmount)||0);
     });
 
     // Update Stats Panel
-    document.getElementById('mdTotal').textContent = fmtMoney(tPaid);
-    document.getElementById('mdCount').textContent = `${filtered.length} Receipts`;
-    document.getElementById('mdProps').textContent = `${new Set(filtered.map(r=>r.pid||r.propNo).filter(Boolean)).size} Properties`;
+    document.getElementById('sdTotal').textContent = fmtMoney(tPaid);
+    document.getElementById('sdCount').textContent = `${filtered.length} Receipts`;
+    document.getElementById('sdProps').textContent = `${new Set(filtered.map(r=>r.pid||r.propNo).filter(Boolean)).size} Properties`;
 
-    // Render Mini Trend Chart
-    const chartEl = document.getElementById('trendChart');
-    if(Object.keys(yearTotals).length === 0) {
-        chartEl.innerHTML = '<div style="color:var(--muted); font-size:10px; margin:auto;">No data</div>';
-    } else {
-        const sortedYears = Object.keys(yearTotals).sort();
-        const maxVal = Math.max(...Object.values(yearTotals));
-        
-        chartEl.innerHTML = sortedYears.map(year => {
-            const val = yearTotals[year];
-            const heightPct = maxVal === 0 ? 0 : Math.max(5, (val / maxVal) * 100);
-            return `
-            <div class="chart-bar-wrap">
-                <div class="chart-tooltip">${fmtMoney(val)}</div>
-                <div class="chart-bar" style="height: ${heightPct}%;"></div>
-                <div class="chart-label">${escapeHtml(year.substring(0, 4) || year)}</div>
-            </div>`;
-        }).join('');
-    }
-
-    // Render Breakup Grid
-    const brkEl = document.getElementById('breakupContainer');
+    // Render Breakup Logic (Gross Components - Discount = Net Paid)
+    const tGrossKnown = tBuild + tBeg + tLib + tHealth;
+    const tNetExpected = tGrossKnown - tDisc;
+    const tOther = Math.max(0, tPaid - tNetExpected); 
+    const tTotalBar = tGrossKnown + tOther; // For calculating percentages
+    
+    const stackBar = document.getElementById('sdStackBar');
+    const legend = document.getElementById('sdLegend');
+    
     if(tPaid === 0) {
-         brkEl.innerHTML = '<div style="color:var(--muted); font-size:10px; grid-column:1/-1;">No breakdown data</div>';
+         stackBar.innerHTML = '';
+         legend.innerHTML = '<span style="color:var(--muted)">No breakdown data</span>';
     } else {
-        const tKnown = tBuild + tBeg + tLib + tHealth;
-        const tOther = Math.max(0, tPaid - tKnown);
+        const buildPct = (tBuild / tTotalBar) * 100;
+        const begPct = (tBeg / tTotalBar) * 100;
+        const libPct = (tLib / tTotalBar) * 100;
+        const healthPct = (tHealth / tTotalBar) * 100;
+        const otherPct = (tOther / tTotalBar) * 100;
         
-        const items = [
-            { label: 'Building', val: tBuild, color: 'var(--amber)' },
-            { label: 'Beggary', val: tBeg, color: 'var(--cyan)' },
-            { label: 'Library', val: tLib, color: 'var(--muted)' },
-            { label: 'Health', val: tHealth, color: 'var(--ink)' }
-        ];
+        stackBar.innerHTML = `
+            <div class="seg build" style="width: ${buildPct}%"></div>
+            <div class="seg beggary" style="width: ${begPct}%"></div>
+            <div class="seg lib" style="width: ${libPct}%"></div>
+            <div class="seg health" style="width: ${healthPct}%"></div>
+            ${tOther > 0 ? `<div class="seg other" style="width: ${otherPct}%"></div>` : ''}
+        `;
         
-        if (tOther > 0.01) items.push({ label: 'Arrears / Other', val: tOther, color: 'var(--danger)' });
+        let legendHtml = `
+            <div class="legend-item"><div class="dot build"></div> Building <span>${fmtMoney(tBuild)}</span></div>
+            <div class="legend-item"><div class="dot beggary"></div> Beggary <span>${fmtMoney(tBeg)}</span></div>
+            <div class="legend-item"><div class="dot lib"></div> Library <span>${fmtMoney(tLib)}</span></div>
+            <div class="legend-item"><div class="dot health"></div> Health <span>${fmtMoney(tHealth)}</span></div>
+        `;
         
-        brkEl.innerHTML = items.map(item => {
-            const pct = (item.val / tPaid) * 100;
-            return `
-            <div class="bk-item">
-                <div class="bk-head"><span>${item.label}</span><span>${fmtMoney(item.val)}</span></div>
-                <div class="bk-track"><div class="bk-fill" style="width: ${pct}%; background: ${item.color}"></div></div>
-            </div>`;
-        }).join('');
+        if (tDisc > 0.01) legendHtml += `<div class="legend-item discount"><div class="dot" style="background:#10b981;"></div> Discount <span>-${fmtMoney(tDisc)}</span></div>`;
+        if (tOther > 0.01) legendHtml += `<div class="legend-item"><div class="dot other"></div> Arrears/Other <span>${fmtMoney(tOther)}</span></div>`;
+        
+        legend.innerHTML = legendHtml;
     }
 }
 
@@ -595,7 +575,7 @@ document.getElementById('openAdd').addEventListener('click', ()=>{ document.getE
 window.editReceipt = function(id){
   const r = receipts.find(x=>x.id===id); if(!r) return; editingId = id;
   ['ownerName','finYear','district','taluk','panchayat','village','pid','propNo','receiptNo','receiptDate','paymentType','paymentDate','paidBy'].forEach(k => document.getElementById(k).value = r[k]||'');
-  ['taxBuilding','cessBeggary','cessLibrary','cessHealth','roundOff','totalAmount'].forEach(k => document.getElementById(k).value = r[k]||0);
+  ['taxBuilding','cessBeggary','cessLibrary','cessHealth','taxDiscount','roundOff','totalAmount'].forEach(k => document.getElementById(k).value = r[k]||0);
   document.getElementById('overlay').classList.add('open');
 };
 
@@ -618,7 +598,6 @@ document.getElementById('receiptForm').addEventListener('submit', async (e)=>{
   e.preventDefault();
   const recNo = document.getElementById('receiptNo').value.trim();
   
-  // Negative Test: Prevent saving if Receipt No already exists (and we aren't editing that specific one)
   const isDuplicate = receipts.some(r => r.receiptNo === recNo && r.id !== editingId);
   if(isDuplicate && recNo !== '') {
       alert(`Error: A receipt with number ${recNo} already exists in the ledger.`);
@@ -642,7 +621,7 @@ document.getElementById('receiptForm').addEventListener('submit', async (e)=>{
     paidBy: document.getElementById('paidBy').value.trim(),
     taxBuilding: parseFloat(document.getElementById('taxBuilding').value)||0, cessBeggary: parseFloat(document.getElementById('cessBeggary').value)||0,
     cessLibrary: parseFloat(document.getElementById('cessLibrary').value)||0, cessHealth: parseFloat(document.getElementById('cessHealth').value)||0,
-    roundOff: parseFloat(document.getElementById('roundOff').value)||0, totalAmount: parseFloat(document.getElementById('totalAmount').value)||0,
+    taxDiscount: parseFloat(document.getElementById('taxDiscount').value)||0, roundOff: parseFloat(document.getElementById('roundOff').value)||0, totalAmount: parseFloat(document.getElementById('totalAmount').value)||0,
     hasPdf: pendingPdfBlob ? true : (base.hasPdf || false)
   };
 
@@ -731,6 +710,7 @@ function extractFieldsFromLines(lines){
   d.cessBeggary = amountRow(lines, /Beggary\s*Cess/i);
   d.cessLibrary = amountRow(lines, /Library\s*Cess/i);
   d.cessHealth = amountRow(lines, /Health\s*Cess/i);
+  d.taxDiscount = amountRow(lines, /Discount/i);
   d.roundOff = amountRow(lines, /Round\s*off/i);
   
   m = text.match(/Total payment amount\s+(-?[\d,]+\.?\d*)/i); d.totalAmount = m ? num(m[1]) : 0;
@@ -746,8 +726,7 @@ pdfInput.addEventListener('change', async () => {
   const files = Array.from(pdfInput.files || []); if (!files.length) return;
   importBtn.disabled = true; importBtn.textContent = `Processing...`;
 
-  let ok = 0;
-  let skipped = 0;
+  let ok = 0; let skipped = 0;
   
   for (const file of files){
     try{
@@ -755,16 +734,12 @@ pdfInput.addEventListener('change', async () => {
       const pdf = await pdfjsLib.getDocument({ data: bufForParsing }).promise;
       const lines = await pdfToLines(pdf); const fields = extractFieldsFromLines(lines);
       
-      // Negative Test: Prevent Duplicate Entry via Batch Upload
       const isDuplicate = receipts.some(r => 
           (fields.receiptNo && r.receiptNo === fields.receiptNo) || 
           (r.sourceFile === file.name && r.totalAmount === fields.totalAmount)
       );
       
-      if(isDuplicate) {
-          skipped++;
-          continue; // Skip adding to database
-      }
+      if(isDuplicate) { skipped++; continue; }
       
       const newId = Date.now() + Math.floor(Math.random()*1000);
       const fileBlob = new Blob([buf], { type: 'application/pdf' });
